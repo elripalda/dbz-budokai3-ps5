@@ -21,8 +21,6 @@ REXCVAR_DEFINE_INT32(budokai3_language, 1, "Budokai3", "Text language: 1 = Engli
     .range(1, 6);
 REXCVAR_DEFINE_STRING(budokai3_button_prompts, "playstation", "Budokai3",
                       "The game's button pictures: playstation (DualSense) or xbox (the game's own)");
-REXCVAR_DEFINE_STRING(budokai3_menu_borders, "off", "Budokai3",
-                      "The gold borders at the sides of the game's menus: gold or off");
 REXCVAR_DEFINE_INT32(hub_music_volume, 50, "Budokai3", "The hub's menu music, 0-100 (%)");
 
 namespace budokai3 {
@@ -40,8 +38,6 @@ constexpr char kDefaultConfig[] =
     "budokai3_language = 1\n"
     "# the game's button pictures: playstation or xbox\n"
     "budokai3_button_prompts = \"playstation\"\n"
-    "# the gold borders at the sides of the game's menus: gold or off\n"
-    "budokai3_menu_borders = \"off\"\n"
     "# the frame rate in the corner\n"
     "budokai3_show_fps = true\n"
     "# the hub's menu music, 0-100 (%)\n"
@@ -83,8 +79,8 @@ void ApplyHubChoices() {
   rex::cvar::SetFlagByName("user_language", std::to_string(REXCVAR_GET(budokai3_language)));
   dbz3::settings::SetInputGlyphs(REXCVAR_GET(budokai3_button_prompts) == "xbox" ? "xbox" : "playstation");
   rex::cvar::SetFlagByName("dbz3_show_fps", REXCVAR_GET(budokai3_show_fps) ? "true" : "false");
-  // the PC's Golden borders option (the game's menus and the port's own screens)
-  rex::cvar::SetFlagByName("dbz3_ui_side_borders", REXCVAR_GET(budokai3_menu_borders) == "gold" ? "true" : "false");
+  // the gold borders at the sides of the game's menus stay on (the PC's Golden borders)
+  rex::cvar::SetFlagByName("dbz3_ui_side_borders", "true");
   // the PC launcher's anisotropic setting, from the hub's (the runtime's own cvar in dbz3.toml)
   rex::cvar::SetFlagByName("dbz3_anisotropic", rex::cvar::GetFlagByName("anisotropic_override"));
   // (the PC's choices that don't apply on the PS5)
@@ -96,9 +92,9 @@ void ApplyHubChoices() {
   rex::cvar::SetFlagByName("dbz3_dim_unfocused", "false");
   rex::cvar::SetFlagByName("dbz3_update_check", "false");
   dbz3::settings::SaveUserSettings();
-  REXLOG_INFO("[budokai3] hub: resolution {}, language {}, buttons {}, fps counter {}, menu borders {}",
-              ResolutionName(), REXCVAR_GET(budokai3_language), REXCVAR_GET(budokai3_button_prompts),
-              REXCVAR_GET(budokai3_show_fps) ? "on" : "off", REXCVAR_GET(budokai3_menu_borders));
+  REXLOG_INFO("[budokai3] hub: resolution {}, language {}, buttons {}, fps counter {}", ResolutionName(),
+              REXCVAR_GET(budokai3_language), REXCVAR_GET(budokai3_button_prompts),
+              REXCVAR_GET(budokai3_show_fps) ? "on" : "off");
 }
 
 void ApplyPs5RuntimeSettings() {

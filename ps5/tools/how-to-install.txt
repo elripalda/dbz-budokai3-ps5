@@ -1,4 +1,4 @@
-DRAGON BALL Z BUDOKAI 3 - PS5 (version 0.0.6 Beta)
+DRAGON BALL Z BUDOKAI 3 - PS5 (version 1.0)
 
 1. Copy this PPSA93004 folder to /data/homebrew/ on your PS5, so you have
    /data/homebrew/PPSA93004/eboot.bin (not a folder inside another folder).
@@ -8,11 +8,6 @@ DRAGON BALL Z BUDOKAI 3 - PS5 (version 0.0.6 Beta)
 
 Updating from an earlier build: copy the new files over the old folder.
 Your Assets folder and saves stay.
-
-HD texture packs: unzip the pack into its own folder in
-/data/homebrew/PPSA93004/mods/ (for example mods/MyPack/, with the pack's
-.png or .dds files inside it or in its subfolders). To take it off, delete
-that folder.
 
 Two players: the second controller has to be signed in to a PS5 user.
 

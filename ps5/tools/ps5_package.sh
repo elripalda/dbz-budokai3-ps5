@@ -98,9 +98,11 @@ cp "$port"/fonts/*.ttf "$port"/fonts/OFL-*.txt "$app/fonts/"
 mkdir -p "$app/ps_buttons/pack"
 python3 "$here/ps_buttons.py" "$app/ps_buttons/pack/AEA34DDB47477372_512x64_RGBA8.png"
 python3 "$here/ps_prompts.py" "$app/ps_buttons/pack" "$app/ps_buttons/touch_pad.png"
+# The controller screen's pointer lines are drawn again for it (ps_pointers.py).
 if [[ -f $port/art/local/buttons/dualsense.png ]]; then
     python3 "$here/ps_controller.py" "$port/art/local/buttons/dualsense.png" \
         "$app/ps_buttons/pack/355BB8CF9E381EA7_512x256_RGBA8.png"
+    python3 "$here/ps_pointers.py" "$app/ps_buttons/pack"
 fi
 # A shader cache to start from (art/local/shader_cache: the files from a PS5
 # that has played a lot, its user_data/dbz3/cache/shaders/shareable). The game

@@ -154,7 +154,7 @@ if(REX_PS5)
     set_source_files_properties(${DBZ3_GAME_SOURCES} PROPERTIES
         COMPILE_OPTIONS "-include;${CMAKE_CURRENT_SOURCE_DIR}/ps5/src/ps5_shims.h")
     # The port's own: the hub, its settings, crash reports.
-    set(BUDOKAI3_VERSION "0.0.6 Beta" CACHE STRING "The PS5 port's version (the hub shows it)")
+    set(BUDOKAI3_VERSION "1.0" CACHE STRING "The PS5 port's version (the hub shows it)")
     list(APPEND DBZ3_SOURCES
         ps5/src/budokai3_ps5.cpp
         ps5/src/ps_button_pack.cpp
