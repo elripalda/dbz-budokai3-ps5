@@ -157,6 +157,7 @@ if(REX_PS5)
     set(BUDOKAI3_VERSION "test1" CACHE STRING "The PS5 port's version (the hub and the log show it)")
     list(APPEND DBZ3_SOURCES
         ps5/src/budokai3_ps5.cpp
+        ps5/src/ps_button_pack.cpp
         ps5/src/ps5_shims.cpp
         ps5/src/ps5_libc_own.cpp
         ps5/src/crash_report_posix.cpp

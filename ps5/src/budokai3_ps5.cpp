@@ -10,6 +10,7 @@
 #include <rex/logging.h>
 
 #include "launcher/settings.h"
+#include "ps_button_pack.h"
 
 // The hub's settings (its Settings page), kept in dbz3.toml.
 REXCVAR_DEFINE_INT32(budokai3_resolution, 2, "Budokai3",
@@ -19,7 +20,7 @@ REXCVAR_DEFINE_BOOL(budokai3_show_fps, false, "Budokai3", "The game's frame rate
 REXCVAR_DEFINE_INT32(budokai3_language, 1, "Budokai3", "Text language: 1 = English, 4 = French, 5 = Spanish")
     .range(1, 6);
 REXCVAR_DEFINE_STRING(budokai3_button_prompts, "playstation", "Budokai3",
-                      "Buttons in the port's own screens: playstation or xbox");
+                      "The game's button pictures: playstation (DualSense) or xbox (the game's own)");
 REXCVAR_DEFINE_INT32(hub_music_volume, 50, "Budokai3", "The hub's menu music, 0-100 (%)");
 
 namespace budokai3 {
@@ -35,7 +36,7 @@ constexpr char kDefaultConfig[] =
     "anisotropic_override = 4\n"
     "# text language: 1 English, 4 French, 5 Spanish\n"
     "budokai3_language = 1\n"
-    "# the buttons in the port's own screens: playstation or xbox\n"
+    "# the game's button pictures: playstation or xbox\n"
     "budokai3_button_prompts = \"playstation\"\n"
     "# the frame rate in the corner\n"
     "budokai3_show_fps = false\n"
@@ -108,6 +109,8 @@ void ApplyPs5RuntimeSettings() {
   rex::cvar::SetFlagByName("guest_vblank_hz", "60");
   rex::cvar::SetFlagByName("vulkan_sparse_shared_memory", "false");
   REXLOG_INFO("[budokai3] PS5 runtime settings: resolution_scale={} ({}), vblank 60 Hz", scale, ResolutionName());
+  // the PlayStation button pictures (before the GPU first reads the pack list)
+  PrepareButtonPack();
 }
 
 }  // namespace budokai3

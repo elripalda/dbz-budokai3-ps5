@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -19,5 +20,9 @@ void Prefetch();
 bool Ready();
 // Pieza `name` ("marco", "caras/11"...): la mueve a `out` (cada una se pide una vez).
 bool Take(const std::string& name, Image& out);
+
+// [ps5 port] Una textura del juego, ya decodificada: la de XXH3 `hash` en la entrada `entry` de
+// data_usi.afs de `dir` (la carpeta de la region). La usa el pack de botones de PlayStation.
+bool ReadPiece(const std::filesystem::path& dir, int entry, uint64_t hash, Image& out);
 
 }  // namespace dbz3::ingame::native_ui

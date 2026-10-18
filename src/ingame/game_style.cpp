@@ -1,6 +1,9 @@
 ﻿// dbz3 - Ver game_style.h. Medidas tomadas de capturas del menu de Duelo a 1600x900 (area 4:3
 // de 1200x900 desde x=200): marco 320..885 x 150..580, filas cada 82 px, bocadillo abajo.
 #include "game_style.h"
+#if defined(__PROSPERO__)
+#include "ps_button_pack.h"   // [ps5 port]
+#endif
 
 #include <algorithm>
 #include <cfloat>
@@ -89,6 +92,22 @@ Pic Img(const char* name) {
     it->second.tex = drawer->CreateTexture(uint32_t(w), uint32_t(h), rex::ui::ImmediateTextureFilter::kLinear, false, px);
     if (it->second.tex) it->second.pic = {reinterpret_cast<ImTextureID>(it->second.tex.get()), float(w), float(h)};
   };
+#if defined(__PROSPERO__)
+  {   // [ps5 port] the PlayStation buttons in place of the game's Xbox ones (ps5/src/ps_button_pack.cpp):
+      // bigger than the game's, so the picture keeps the game's size for its cut-outs
+    std::vector<uint8_t> px;
+    int w = 0, h = 0;
+    float gw = 0, gh = 0;
+    if (budokai3::PsButtonPicture(name, px, w, h, gw, gh)) {
+      upload(px.data(), w, h);
+      if (it->second.tex) {
+        it->second.pic.w = gw;
+        it->second.pic.h = gh;
+      }
+      return it->second.pic;
+    }
+  }
+#endif
   const std::filesystem::path root = dbz3::ModsRoot();
   const std::string file = std::string(name) + ".png";
   std::vector<std::filesystem::path> cands;

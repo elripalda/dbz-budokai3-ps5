@@ -92,6 +92,16 @@ cp "$here/how-to-install.txt" "$app/HOW TO INSTALL.txt"
 # The in-game screens' fonts (Inter and Oswald, SIL Open Font License).
 mkdir -p "$app/fonts"
 cp "$port"/fonts/*.ttf "$port"/fonts/OFL-*.txt "$app/fonts/"
+# The PlayStation buttons (a texture pack, ps_buttons/pack): drawn by the tools
+# here, the DualSense picture from art/local/buttons/dualsense.png. The BACK
+# button's texture is made on the console from the game's (ps_button_pack.cpp).
+mkdir -p "$app/ps_buttons/pack"
+python3 "$here/ps_buttons.py" "$app/ps_buttons/pack/AEA34DDB47477372_512x64_RGBA8.png"
+python3 "$here/ps_prompts.py" "$app/ps_buttons/pack" "$app/ps_buttons/touch_pad.png"
+if [[ -f $port/art/local/buttons/dualsense.png ]]; then
+    python3 "$here/ps_controller.py" "$port/art/local/buttons/dualsense.png" \
+        "$app/ps_buttons/pack/355BB8CF9E381EA7_512x256_RGBA8.png"
+fi
 # SDL's controller mappings (the PC port ships it next to the exe).
 if [[ -f $root/gamecontrollerdb.txt ]]; then cp "$root/gamecontrollerdb.txt" "$app/"; fi
 cat > "$app/sce_sys/param.json" <<EOF

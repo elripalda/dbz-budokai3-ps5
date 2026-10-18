@@ -22,6 +22,8 @@ ps5/tools/ps5_package.sh out/ps5 <plume> PPSA93004
 
 The app folder lands in `out/ps5/ps5-app/PPSA93004`.
 
+The packaging also draws the PlayStation buttons (`ps5/tools/ps_buttons.py`, `ps_prompts.py`, `ps_controller.py`: Python 3 with Pillow, NumPy, OpenCV and Shapely) into `ps_buttons/` of the app, a texture pack the game uses when the hub's Button Prompts are on PlayStation. The DualSense picture comes from `ps5/art/local/buttons/dualsense.png` (your own art, not in the repo).
+
 ## On the PS5
 
 Copy `PPSA93004` to `/data/homebrew/`, then your disc's `DBZ3` folder into `PPSA93004/Assets/`.

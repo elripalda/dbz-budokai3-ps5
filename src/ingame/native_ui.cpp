@@ -302,6 +302,22 @@ void Prefetch() {
 
 bool Ready() { return g_ready.load(); }
 
+bool ReadPiece(const std::filesystem::path& dir, int entry, uint64_t hash, Image& out) {
+  std::filesystem::path usi = dir / "data_usi.afs";
+  std::error_code ec;
+  for (const auto& alt : {dir.parent_path() / "us" / "data_usi.afs", dir / "data_eng.afs"}) {   // (como Extract)
+    if (std::filesystem::exists(usi, ec)) break;
+    usi = alt;
+  }
+  const std::vector<uint8_t> b = ReadEntry(usi, entry);
+  for (size_t i = 0; i + 128 <= b.size(); ++i) {
+    if (std::memcmp(&b[i], "DDS |", 5) != 0) continue;
+    const size_t size = DdsSize(&b[i], b.size() - i);
+    if (size && XXH3_64bits(&b[i + 128], size) == hash) return DecodeDds(&b[i], b.size() - i, out);
+  }
+  return false;
+}
+
 bool Take(const std::string& name, Image& out) {
   std::lock_guard<std::mutex> lock(g_mu);
   auto it = g_images.find(name);

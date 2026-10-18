@@ -126,8 +126,8 @@ static const std::vector<Hub::Setting>& Settings() {
        "The language of the game's menus and story text. The voices stay as the game has them.", false,
        {"1", "4", "5"}, {"English", "French", "Spanish"}, "1"},
       {"CONTROLS", "budokai3_button_prompts", "Button Prompts", nullptr,
-       "The buttons shown in the port's own screens (Tag Team, the quick menu). PlayStation shows the "
-       "DualSense's; Xbox keeps the game's own.",
+       "The button pictures in the game's menus and prompts and on the controller screen. PlayStation "
+       "shows the DualSense's; Xbox keeps the game's own.",
        true, {"playstation", "xbox"}, {"PlayStation", "Xbox"}, "playstation"},
       {"AUDIO", "hub_music_volume", "Menu Music", nullptr,
        "How loud the music is here in the hub. It changes right away.", false,
