@@ -42,7 +42,7 @@ It opens on its own **hub**, where you change settings, manage saves and check y
 
 ## Features
 
-- **60 fps** at 720p (the Xbox 360's), **1440p** (the default) or 4K, with anisotropic filtering.
+- **720p** (the Xbox 360's), **1440p** (the default, a steady 60 fps) or **4K**, with anisotropic filtering.
 - **PlayStation buttons**: the game's button pictures in the menus and help bars are PlayStation ones, OPTIONS and the touch pad included, and the Controller screen shows a DualSense with its lines pointing at the right buttons. The Xbox originals are one setting away.
 - **Trophies**: Budokai 3's 23 achievements as trophies, plus a platinum. A popup shows in the corner when you earn one, and the hub's Trophies page lists them.
 - **Two players** on two DualSense controllers.
