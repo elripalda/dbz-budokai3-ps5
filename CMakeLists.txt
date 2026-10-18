@@ -2,13 +2,28 @@
 # Dragon Ball Z Budokai 3 (PAL / Xbox 360 HD Collection)
 
 cmake_minimum_required(VERSION 3.25)
-project(dbz3 LANGUAGES CXX)
+project(dbz3 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(REX_PS5)
+    # [ps5 port] The runtime's source tree (the PS5 runtime with this game's
+    # runtime changes merged in), built along with the game for the PS5. No
+    # profiler, and none of SDL's desktop backends (the runtime's PS5 platform
+    # layer has the display, audio and the DualSense).
+    set(REXGLUE_ENABLE_TRACY OFF CACHE BOOL "" FORCE)
+    foreach(opt SDL_DBUS SDL_HIDAPI SDL_IBUS SDL_JACK SDL_KMSDRM SDL_LIBUDEV SDL_OFFSCREEN SDL_OSS SDL_SNDIO)
+        set(${opt} OFF CACHE BOOL "" FORCE)
+    endforeach()
+    if(NOT REXSDK_DIR)
+        message(FATAL_ERROR "Set REXSDK_DIR to the runtime's source tree")
+    endif()
+    add_subdirectory(${REXSDK_DIR} rexglue-sdk)
+else()
 # Find ReXGlue SDK (pre-built distribution)
 find_package(rexglue REQUIRED CONFIG)
+endif()
 
 # User source files
 set(DBZ3_SOURCES
@@ -131,7 +146,36 @@ if(src/escenarios.cpp IN_LIST DBZ3_SOURCES AND (NOT EXISTS "${CMAKE_CURRENT_SOUR
     endif()
 endif()
 
-if(WIN32)
+if(REX_PS5)
+    # [ps5 port] NovaPowers' game code, with the calls a PS5 app can't make
+    # (starting programs, the network interfaces' list) renamed to stubs.
+    set(DBZ3_GAME_SOURCES ${DBZ3_SOURCES})
+    list(FILTER DBZ3_GAME_SOURCES INCLUDE REGEX "^src/")
+    set_source_files_properties(${DBZ3_GAME_SOURCES} PROPERTIES
+        COMPILE_OPTIONS "-include;${CMAKE_CURRENT_SOURCE_DIR}/ps5/src/ps5_shims.h")
+    # The port's own: the hub, its settings, crash reports.
+    set(BUDOKAI3_VERSION "test1" CACHE STRING "The PS5 port's version (the hub and the log show it)")
+    list(APPEND DBZ3_SOURCES
+        ps5/src/budokai3_ps5.cpp
+        ps5/src/ps5_shims.cpp
+        ps5/src/crash_report_posix.cpp
+        ps5/src/ps5/procparam_room.cpp
+        ps5/src/ps5/sound.cpp
+        ps5/src/hub/hub_ui.cpp
+        ps5/src/hub/ps5_hub.cpp
+        ps5/src/hub/hub_sfx.cpp
+        ps5/src/hub/hub_install.cpp)
+    set_source_files_properties(ps5/src/hub/ps5_hub.cpp PROPERTIES
+        COMPILE_DEFINITIONS "BUDOKAI3_FONTS_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/ps5/fonts\""
+        OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ps5/fonts/oswald-latin-700-normal.ttf")
+    add_executable(dbz3 ${DBZ3_SOURCES})
+    target_compile_definitions(dbz3 PRIVATE BUDOKAI3_VERSION="${BUDOKAI3_VERSION}")
+    target_include_directories(dbz3 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/ps5/src)
+    if(TARGET imgui)
+        target_include_directories(dbz3 PRIVATE $<TARGET_PROPERTY:imgui,INTERFACE_INCLUDE_DIRECTORIES>
+                                                 ${REXSDK_DIR}/thirdparty/stb)
+    endif()
+elseif(WIN32)
     # dbz3.manifest: pagina de codigos UTF-8 (CMake lo funde con el manifiesto del enlazador)
     add_executable(dbz3 WIN32 ${DBZ3_SOURCES} src/version.rc src/dbz3.manifest)
     # UCRT marks getenv/fopen as "deprecated" even though they are the portable
@@ -170,7 +214,7 @@ if(WIN32)
     target_link_libraries(dbz3 PRIVATE winhttp version ws2_32 ole32 oleaut32)   # ws2_32: online (src/net); ole32: UPnP del router
 endif()
 
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND NOT REX_PS5)
     # Whole-archive linking for kernel hooks
     target_link_options(dbz3 PRIVATE
         -Wl,--whole-archive

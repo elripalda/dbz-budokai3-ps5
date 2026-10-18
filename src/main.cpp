@@ -81,6 +81,17 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 REXCVAR_DECLARE(bool, dbz3_skip_launcher);
 
+#if defined(__PROSPERO__)
+// [ps5 port] The hub (ps5/src/hub) opens first and has the launcher's
+// settings; the game starts straight from it.
+#include "budokai3_ps5.h"
+#include "crash_report.h"
+#include "hub/ps5_hub.h"
+static bool SkipLauncher() { return true; }
+#else
+static bool SkipLauncher() { return REXCVAR_GET(dbz3_skip_launcher); }
+#endif
+
 // dbz3 - Window focus, shared with the in-game overlay (which dims the picture
 // while the window is in the background) and with the audio driver through the
 // `dbz3_window_focused` cvar (which silences the mix while unfocused).
@@ -96,6 +107,8 @@ bool OverlayOpen() { return g_overlay_open.load() || rex::ui::QuickMenuDialog::I
 }  // namespace dbz3
 
 #include <atomic>
+#include <functional>
+#include <optional>
 #include <chrono>
 #include <filesystem>
 #include <utility>
@@ -429,6 +442,9 @@ public:
         // graficas integradas eso basta para que todo vaya a tirones. 60 es fluido;
         // al pulsar Jugar se aplica el tope del usuario (ApplyRuntimeSettingsToSdk(true)).
         rex::cvar::SetFlagByName("frame_cap", "60");
+#if defined(__PROSPERO__)
+        budokai3::ApplyPs5RuntimeSettings();
+#endif
 #ifdef _WIN32
         // 1.4.3 EX: el guest necesita sus hilos a tiempo cada 16,7 ms. Con otros
         // programas pesados abiertos (navegador, render de video, antivirus) se
@@ -451,8 +467,33 @@ public:
 
     // Launcher fonts (Segoe UI + icons) go into the shared atlas before it is built.
     void OnConfigureFonts(ImFontAtlas* atlas) override {
+#if defined(__PROSPERO__)
+        budokai3::hub::ConfigureFonts(atlas);
+#endif
         dbz3::launcher::ui::LoadFonts(atlas);
     }
+
+#if defined(__PROSPERO__)
+    // [ps5 port] The hub first (before the runtime is set up); START GAME
+    // resumes the start with its choices.
+    std::optional<rex::PathConfig> OnFinalizePaths(const rex::PathConfig& defaults,
+                                                   std::function<void(rex::PathConfig)> resume) override {
+        if (!imgui_drawer()) {
+            budokai3::ApplyHubChoices();
+            return defaults;
+        }
+        const std::filesystem::path app = rex::filesystem::GetExecutableFolder();
+        budokai3::hub::Paths paths{app, config_path_, dbz3::settings::UserDataRoot()};
+        budokai3::hub::Show(imgui_drawer(), immediate_drawer(), paths, [this, defaults, resume] {
+            // the hub's changes (dbz3.toml) apply to this start
+            rex::cvar::LoadConfig(config_path_);
+            budokai3::ApplyHubChoices();
+            REXLOG_INFO("PS5 hub: START GAME (game folder {})", defaults.game_data_root.string());
+            app_context().CallInUIThreadDeferred([defaults, resume] { resume(defaults); });
+        });
+        return std::nullopt;
+    }
+#endif
 
     // In-game quick settings (F1 / Back + Start), see ingame/quick_settings.cpp.
     void OnConfigureQuickMenu(rex::ui::QuickMenuConfig& menu) override {
@@ -506,7 +547,7 @@ public:
         // NOTE: skip-launcher boots directly; drawing the dialog here would let
         // its PLAY/Enter shortcut fire a second LaunchModule (guarded, but
         // pointless). Skip creating it in that dev fast path.
-        if (!launcher_dialog_ && !REXCVAR_GET(dbz3_skip_launcher)) {
+        if (!launcher_dialog_ && !SkipLauncher()) {
             launcher_dialog_ = new dbz3::launcher::LauncherDialog(
                 drawer, [this]() {
                     launcher_dialog_ = nullptr;
@@ -621,6 +662,12 @@ public:
     void OnConfigurePaths(rex::PathConfig& paths) override {
         auto exe_dir = rex::filesystem::GetExecutableFolder();
         REXLOG_INFO("OnConfigurePaths - exe_dir: {}", exe_dir.string());
+#if defined(__PROSPERO__)
+        REXLOG_INFO("==== DBZ Budokai 3 PS5 port {} ====", BUDOKAI3_VERSION);
+        budokai3::InstallCrashReporter(exe_dir / "crashes");
+        budokai3::PrepareSettingsFile(paths.config_path);
+        config_path_ = paths.config_path;
+#endif
         // OnConfigurePaths runs in SetupEnvironment, before OnPreSetup loads
         // the user settings. Load them here too so dbz3_region is already the
         // persisted value when we build the region/mod overlay below.
@@ -645,7 +692,13 @@ public:
             // but no us/ — rejecting it made auto-detection fall back to the exe
             // folder and fail with "Entrypoint XEX not found".
             // Matches IsValidGameDataDir/banner.
+#if defined(__PROSPERO__)
+            // [ps5 port] <app>/Assets: the disc's DBZ3 folder in it (Assets/DBZ3), or its contents
+            // (Assets/us). DBZ3 first: a whole disc copied in also has the collection menu's us/.
+            const char* kSub[] = {"Assets/DBZ3", "assets/DBZ3", "Assets", "assets", "", "DBZ3"};
+#else
             const char* kSub[] = {"", "assets", "DBZ3", "assets/DBZ3", "DBZ3/assets"};
+#endif
             for (const char* sub : kSub) {
                 const auto dir = sub[0] == '\0' ? base : base / sub;
                 if (std::filesystem::is_directory(dir / "us") ||
@@ -912,7 +965,7 @@ protected:
     // Gate the module launch behind the pre-game launcher dialog. The
     // launcher's Play button calls ReXApp::LaunchModule() directly.
     void LaunchModule() override {
-        if (REXCVAR_GET(dbz3_skip_launcher)) {
+        if (SkipLauncher()) {
             // R8 (pruebas): el mismo paso que JUGAR del launcher, escenarios de los juegos de PS2 del jugador
             if (std::getenv("DBZ3_TEST_ESCENARIOS_AUTO")) {
                 dbz3::launcher::ModPipeline stages;
@@ -1042,6 +1095,8 @@ private:
     bool drop_listener_added_ = false;
     // Project root used to build the region/mod overlay (set in OnConfigurePaths).
     std::filesystem::path game_dir_;
+    // [ps5 port] the app's settings file (the hub's)
+    std::filesystem::path config_path_;
     static std::atomic<bool> crash_logged_;
 
     static void SetupCrashHandler() {

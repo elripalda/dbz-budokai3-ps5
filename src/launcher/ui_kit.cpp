@@ -2,6 +2,8 @@
 
 #include "ui_kit.h"
 
+#include <rex/filesystem.h>
+
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
@@ -78,7 +80,19 @@ ImFont* AddFont(ImFontAtlas* atlas, const std::string& path, float size,
 }  // namespace
 
 void LoadFonts(ImFontAtlas* atlas) {
+#if defined(__PROSPERO__)
+  // [ps5 port] the hub's fonts, shipped beside the app (fonts/, SIL Open Font License)
+  static const std::string ps5_regular =
+      (rex::filesystem::GetExecutableFolder() / "fonts" / "inter-latin-400-normal.ttf").string();
+  static const std::string ps5_bold =
+      (rex::filesystem::GetExecutableFolder() / "fonts" / "inter-latin-600-normal.ttf").string();
+  static const std::string ps5_black =
+      (rex::filesystem::GetExecutableFolder() / "fonts" / "oswald-latin-700-normal.ttf").string();
+#else
+  static const std::string ps5_regular, ps5_bold, ps5_black;
+#endif
   const std::string regular = FirstExisting({
+      ps5_regular.c_str(),
       "C:\\Windows\\Fonts\\segoeui.ttf",
       "/usr/share/fonts/liberation-sans/LiberationSans-Regular.ttf",
       "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
@@ -91,6 +105,7 @@ void LoadFonts(ImFontAtlas* atlas) {
     return;
   }
   const std::string semibold = FirstExisting({
+      ps5_bold.c_str(),
       "C:\\Windows\\Fonts\\seguisb.ttf",
       "C:\\Windows\\Fonts\\segoeuib.ttf",
       "/usr/share/fonts/liberation-sans/LiberationSans-Bold.ttf",
@@ -99,6 +114,7 @@ void LoadFonts(ImFontAtlas* atlas) {
       "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
   });
   const std::string black = FirstExisting({
+      ps5_black.c_str(),
       "C:\\Windows\\Fonts\\seguibl.ttf",
       "C:\\Windows\\Fonts\\segoeuib.ttf",
   });
