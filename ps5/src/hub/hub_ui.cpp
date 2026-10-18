@@ -923,7 +923,7 @@ void Hub::Navigate(const Pad& pad) {
       Play(Sound::kError);
       Confirm("The game isn't set up",
               "Set up Budokai 3 with Recomp Store, or copy the DBZ3 folder from your Budokai HD Collection disc into "
-              "/data/homebrew/PPSA93003/Assets/ (Assets/DBZ3/yae3_xenon.xex and Assets/DBZ3/us).",
+              "/data/homebrew/PPSA93004/Assets/ (Assets/DBZ3/yae3_xenon.xex and Assets/DBZ3/us).",
               "OK", [] {});
     } else if (!state_.xex_ok) {
       Play(Sound::kError);

@@ -59,7 +59,7 @@ struct Assets {
 };
 
 struct Paths {
-  std::filesystem::path app;        // the app folder (/data/homebrew/PPSA93003)
+  std::filesystem::path app;        // the app folder (/data/homebrew/PPSA93004)
   std::filesystem::path config;     // budokai3.toml (the hub's settings)
   std::filesystem::path user_data;  // UserData: the saves are the game's content folders in it
 };

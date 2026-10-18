@@ -17,11 +17,11 @@ cmake -S . -B out/ps5 -G Ninja -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_TOOLCHAIN_FILE=ps5/cmake/ps5-toolchain.cmake -DPS5_PAYLOAD_SDK=<plume>/.deps/native/ps5-payload-sdk \
   -DREXSDK_DIR=<runtime> -DREXGLUE_HOST_TOOL=<host rexglue>
 ninja -C out/ps5 dbz3
-ps5/tools/ps5_package.sh out/ps5 <plume> PPSA93003
+ps5/tools/ps5_package.sh out/ps5 <plume> PPSA93004
 ```
 
-The app folder lands in `out/ps5/ps5-app/PPSA93003`.
+The app folder lands in `out/ps5/ps5-app/PPSA93004`.
 
 ## On the PS5
 
-Copy `PPSA93003` to `/data/homebrew/`, then your disc's `DBZ3` folder into `PPSA93003/Assets/`.
+Copy `PPSA93004` to `/data/homebrew/`, then your disc's `DBZ3` folder into `PPSA93004/Assets/`.

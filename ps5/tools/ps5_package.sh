@@ -13,7 +13,7 @@ set -euo pipefail
 
 build=$(realpath "${1:?cmake build dir}")
 tri=$(realpath "${2:?ps5-plume-triangle checkout}")
-title_id=${3:-PPSA93003}
+title_id=${3:-PPSA93004}
 here=$(cd "$(dirname "$0")" && pwd)
 port=$(cd -- "$here/.." && pwd)        # ps5/
 root=$(cd -- "$port/.." && pwd)        # the project
