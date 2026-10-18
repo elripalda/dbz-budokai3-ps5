@@ -10,7 +10,7 @@
 
 **Windows | Linux**
 
-[English](README.md) · Español
+[English](README-DBZ-Budokai-3-HD-Collection.md) · Español
 
 Un port de *Dragon Ball Z: Budokai 3 HD Collection* (Xbox 360) a PC, hecho con
 el [ReXGlue SDK](https://github.com/rexglue/rexglue-sdk). El código PowerPC del

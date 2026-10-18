@@ -1,521 +1,149 @@
-<p align="center"><img src="docs/logo.png" alt="Dragon Ball Z Budokai 3 HD Recomp" width="480"></p>
-
 <p align="center">
-  <a href="https://ko-fi.com/novapowers"><img src="https://img.shields.io/badge/Ko--fi-Support%20the%20project-FF5E5B?logo=ko-fi&logoColor=white" alt="Support the project on Ko-fi"></a>
+  <img src="docs/images/ps5-banner.jpg" alt="Dragon Ball Z Budokai 3 for PlayStation 5, built on the recompilation by NovaPowers" width="100%">
 </p>
 
-# DBZ Budokai 3 HD Collection
+<p align="center">
+  <a href="../../releases/latest"><img alt="Latest release" src="https://img.shields.io/badge/release-v1.0-f78a1d"></a>
+  <img alt="Platform: PS5 homebrew" src="https://img.shields.io/badge/platform-PS5%20homebrew-1f5fd6">
+  <a href="https://github.com/novapowers0/DBZ-Budokai-3-HD-Collection"><img alt="Built on novapowers0/DBZ-Budokai-3-HD-Collection" src="https://img.shields.io/badge/built%20on-novapowers0%2FDBZ--Budokai--3--HD--Collection-f7a24a"></a>
+  <a href="https://discord.gg/GgDE5Vynyu"><img alt="Discord" src="https://img.shields.io/badge/Discord-RIPALDA-5865F2"></a>
+</p>
 
-<p align="center">🎬 <b>1.5.0 trailer:</b> <a href="https://youtu.be/zcW-9RK046Q">full video (ES/EN, with install tutorial)</a> · <a href="https://youtube.com/shorts/uqRetUHTBaA">Short</a></p>
+<p align="center">
+  <b>Dragon Ball Z: Budokai 3</b> running natively on a jailbroken PS5,<br>
+  a port of <a href="https://github.com/novapowers0/DBZ-Budokai-3-HD-Collection"><b>NovaPowers' DBZ Budokai 3 HD Collection</b></a>.
+</p>
 
-**Windows | Linux**
-
-English · [Español](README_ES.md)
-
-A native PC port of *Dragon Ball Z: Budokai 3 HD Collection* (Xbox 360) built
-on the [ReXGlue SDK](https://github.com/rexglue/rexglue-sdk). The game's
-original PowerPC code is statically recompiled and linked into a standalone
-executable with its own launcher and mod system. It is a real port, not an
-emulator. Native Linux builds use Vulkan and SDL3.
-
-[![Release](https://img.shields.io/github/v/release/novapowers0/DBZ-Budokai-3-HD-Collection?sort=semver&style=flat-square&color=orange&label=Release)](https://github.com/novapowers0/DBZ-Budokai-3-HD-Collection/releases/latest)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-0078D6?style=flat-square)](https://github.com/novapowers0/DBZ-Budokai-3-HD-Collection/releases/latest)
-[![License](https://img.shields.io/github/license/novapowers0/DBZ-Budokai-3-HD-Collection?style=flat-square)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/novapowers0/DBZ-Budokai-3-HD-Collection?style=flat-square&color=yellow)](https://github.com/novapowers0/DBZ-Budokai-3-HD-Collection)
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/novapowers)
-[![Built with](https://img.shields.io/badge/built%20with-ReXGlue-8A2BE2?style=flat-square)](https://github.com/rexglue/rexglue-sdk)
-
-| | |
-|---|---|
-| Players | 1–2 (versus) |
-| Platform | Windows / Linux |
-| Engine | Xbox 360 (ReXGlue SDK) |
-| Genre | 3D fighting |
-| Version | v1.5.0 |
-
-Copyright (c) 2026 **NovaPowers**. Released under the MIT License (see `LICENSE`).
-
-**[⬇ Download the latest version](../../releases/latest)** ·
-[What's new (CHANGELOG)](CHANGELOG.md) · [How to install](#how-to-install-step-by-step) ·
-[Mods and new characters](#mods-and-new-characters)
+<p align="center">
+  <a href="../../releases/latest"><b>Download</b></a> ·
+  <a href="#install">Install</a> ·
+  <a href="#controls">Controls</a> ·
+  <a href="#building-from-source">Build from source</a> ·
+  <a href="#credits">Credits</a>
+</p>
 
 ---
 
-## What's new in 1.5.0
+<p align="center">
+  <img src="docs/images/ps5-credits.jpg" alt="How this port came together: the Xbox 360 game, NovaPowers' DBZ Budokai 3 HD Collection, the ReXGlue SDK, and this PS5 port by @elripalda" width="100%">
+</p>
 
-> Release video: trailer, what's new and install tutorial (ES/EN) on NovaPowers' YouTube channel.
+> [!NOTE]
+> **This is a port of someone else's project.** The recompilation of Budokai 3, the PC port and everything he added to the game are the work of **[NovaPowers](https://github.com/novapowers0)** in [DBZ Budokai 3 HD Collection](https://github.com/novapowers0/DBZ-Budokai-3-HD-Collection), whose code and history are the base of this repository. This repository adds what the PS5 needs to run it (mostly in [`ps5/`](ps5)): the PS5 build, a hub made for the DualSense, trophies and PlayStation button pictures. If you enjoy it, go give the original project a ⭐ and support NovaPowers on [Ko-fi](https://ko-fi.com/novapowers).
 
-- **Dragon HUB:** rank plates (KYU 5 to MASTER), new backgrounds and hosts, fighters flying to the camera, a save icon, and **BETA / EXPERIMENTAL** labels on everything still under construction.
-- **Tag Team (beta):** teleport relays, also between computer fighters (COM vs COM).
-- **Mods from the ISO:** mods now work when you play straight from the `.iso` (prepared in a few seconds the first time).
-- **Your PS2 games with one button:** "Pick ISO" for Budokai 1, Budokai 2 and Infinite World (launcher > Game, or press A inside the campaign). The game is recognised by its content and nothing is copied.
-- **Renewed launcher** (hover help, Nova's Mods as cards, mods ON/OFF) and **renewed F1 menu**.
-- **New modes:** Mission 100, Hero mode (beta, swap fighting style between fights with LB/RB), Mr. Satan legend (beta, Budokai 3 models).
-- **Infinite World and Budokai 2 campaigns + Babidi's Ship (EXPERIMENTAL):** playable for testing; still work in progress.
-- **Single transformation capsule** and EU version.
-- **Everything translated** into Spanish, English, French, German and Italian (Nova's Mods descriptions too).
-- Credits: **🇮🇹⚠ 𝐒𝐏𝐈𝐃𝐄𝐑 ⚠🇮🇹** for the Infinite World decompilation.
+## What it is
 
-## What's new in 1.4.5.2
+A PS5 homebrew app (title ID `PPSA93004`) that runs Budokai 3 from the Budokai HD Collection as native code. It isn't an emulator: the Xbox 360 game is statically recompiled with the [ReXGlue SDK](https://github.com/rexglue/rexglue-sdk), as NovaPowers' port does on PC (this release is built on his v1.5.0), and draws on Vulkan (Mesa RADV).
 
-- **Tag Team (beta):** if you are knocked out of the ring and still have a partner, they come in and the fight goes on; the incoming fighter flies in and powers up with the game's own ki-charge pose (computer partners too).
-- **Online (beta):** different mods no longer drop the connection: the panel shows what is missing and **INSTALL WHAT IS MISSING** downloads it from Nova's Mods. Router port opening (UPnP) and the public IP are back; playing from the same house shows the local IP.
-- **Kit:** official ports (Goku GT, Vegeta GT, Pan, Baby, Janemba, sword Trunks, Future Gohan) rebuilt in one click with standard per-game presets; campaigns with new text that is allocated automatically (Frieza's story already uses it).
+It opens on its own **hub**, where you change settings, manage saves and check your trophies with the controller, then start the game.
 
-## What's new in 1.4.5
-
-- **HD texture packs without stutter:** HD textures are prepared in the background and swapped in gradually; the game no longer freezes when a menu or a fight loads, and turning the pack on or off (F1) is instant. It adapts to your PC's free RAM and remembers the textures you use so they are ready next time.
-- **[SSGPrinceVegeta](https://x.com/SSGPrinceVegeta)'s HD pack on Nova's Mods:** one click in the launcher downloads and installs it (2.9 GB). Fixed: 1.4.4.5 loaded no texture pack at all.
-- **The launcher looks after your mods:** installing a zip can no longer break the mod you had; mods inside an extra folder and zips with several mods are placed automatically; names with accents, Cyrillic or Japanese work; after a crash it offers to turn off the newest mods; it warns when two mods change the same thing.
-- **Search boxes** in profiles, Nova's Mods (also by author) and new characters; launcher fully translated to Italian, German and French.
-- **Controllers:** with no Xbox controller connected the game switches to SDL on its own (DualSense, Switch...).
-
-## What's new in 1.4.3 EX
-
-- **Performance:** fixed 30 FPS and stutter on powerful PCs, steadier frame pacing and a much lighter launcher.
-- **Works on any GPU:** laptops use the dedicated GPU, fixed the crash on AMD RX 6000/7000/9000, faster Intel Arc and automatic switch to Vulkan if Direct3D 12 fails.
-- **Stable with heavy apps open** (browser, recording, antivirus).
-- **More reliable HD texture packs** and text translated into French, German and Italian.
-
-## What's new in 1.4.3
-
-- **Ultimates for everyone (WIP):** Zarbon, Dodoria and Android 19 get their Budokai 1 ultimate adapted to Budokai 3; Android 19 gets its Budokai 1 moves. This is a first version: expect bugs.
-- **Edit Skills fixed:** with new characters installed, the capsule tray was shifted and did not respond.
-- **Full Infinite World:** imported characters bring their original moves, techniques and ultimate, and all of them enter hyper mode.
-- **USA and European copies** of Budokai 1, Budokai 2, Infinite World and Shin Budokai for the importer.
-- **Easier launcher and Kit:** confirmations before deleting or replacing, PLAY without freezing, plain-language errors, full English and an *Ultimate* card in the Kit.
-
-## What's new in 1.4.2 EX
-
-- **Easy PNG textures:** capture textures while playing, edit the PNG and it applies automatically.
-- **Drag-and-drop mods:** drop a `.zip` on the launcher to install it.
-- **Broken-mod warning:** the launcher explains what is wrong with each mod and warns next to PLAY.
-- **Modding Kit with Python included:** nothing to install.
-- **Native mods** (today's **Game** tab) translated to the launcher language.
-- **Shin Budokai characters:** voices, Burning Attack and ki blasts fixed.
-- 1.4.2 brought **NVIDIA DLSS and AMD FSR 3 (beta)**, adjustable HD shine and the Shin Budokai importer.
-
-## What's new in v1.4.1
-
-- **Fixes for the 30 FPS lock-up on powerful PCs** (issue #8): precise timing, and Windows no
-  longer puts the game in power-saving mode (efficiency cores).
-- GPU crash diagnostics (DRED) no longer cost performance: they only turn on
-  for the session after a GPU crash.
-- The log shows where the time goes (`gpu_wait`, `cp_wait`) and records hitches
-  longer than 50 ms.
-- The launcher warns when your game is the European version and you have new
-  characters (they only work with the US/NA version).
-- Fixed the crash when changing costume on a new character (Janemba) and the
-  music going silent with the characters mod plus a music pack.
-- Modding Kit 1.4.1: a **Diagnostics** page that reads the game log and
-  explains what is wrong and what to do.
-
-The character pack is still `DBZ3HD-1.4.0-Personajes.zip` (it works as-is).
-
-## What's new in v1.4.0
-
-- **In-game quick menu**: press **F1** or **Back + Start** on the controller and
-  change picture, sound or display settings without leaving the fight. Changes
-  apply instantly and are saved automatically.
-- **More FPS with FSR**: the game can render below your resolution and let FSR
-  upscale it, for smoother play on modest PCs.
-- **New FPS counter (F3)**: game FPS and display FPS, with a frame-time graph.
-- **Redesigned launcher**: new look, opens in **under a second** (it used to
-  take ~30 s) and can be driven entirely **with a controller**.
-- **New characters** in their own select-screen cells, replacing nobody:
-  Janemba, Android 19, Zarbon, Dodoria, Guldo, Jeice and Burter (optional pack).
-- **Character importer** from Budokai 1, Budokai 2, Infinite World and community
-  models, all from the launcher.
-
-Full list in the [CHANGELOG](CHANGELOG.md).
-
----
-
-## Screenshots
-
-<!--
-TODO(screenshots v1.4.0): save the screenshots as .jpg in docs/screenshots/ (.png is
-in .gitignore and publish_check flags it as FAIL), then remove this comment.
-
-![Launcher v1.4.0](docs/screenshots/launcher_inicio.jpg)
-![New characters tab with the importer](docs/screenshots/launcher_personajes_nuevos.jpg)
-![In-game quick menu (F1 / Back + Start)](docs/screenshots/menu_rapido.jpg)
-![FPS counter (F3)](docs/screenshots/fps_f3.jpg)
-![Character select with the new characters](docs/screenshots/select_personajes_nuevos.jpg)
-![A fight with a new character](docs/screenshots/combate_personaje_nuevo.jpg)
--->
-
-*Screenshots coming soon.*
-
----
-
-## Legal notice
-
-This project does not include the game. To play, you must provide the files
-from **your own legal copy**: the executable (`default.xex`) and the
-`data_*.afs` files of the region you use. This follows the usual convention of
-the static-recompilation community (e.g. `mstan/DragonBallZBuusFuryRecomp`):
-the code and launcher are distributed, the game content is not.
-
-- `baserom.md` lists the exact identity of each file (sizes and SHA-256
-  checksums) and how to extract them from your ISO.
-- The recompiled code (`generated/`) is produced locally from your `.xex` and
-  is never uploaded to the repository.
-
-Unofficial project, non-commercial, for research and preservation. Not
-affiliated with or endorsed by Bandai Namco, Shueisha, Toei Animation or any
-rights holder of Dragon Ball.
-
----
-
-## How to install (step by step)
-
-### What to download
-
-From the [**Releases**](../../releases/latest) page:
-
-| File | What it is |
-|---|---|
-| `DBZ-Budokai-3-HD-Collection-v1.5.0.zip` | **The game for Windows** (required). |
-| `DBZ-Budokai-3-HD-Collection-v1.5.0-linux-amd64.tar.gz` | The game for Linux (Vulkan). |
-| [`DBZ3HD-1.4.3-Personajes.zip`](https://drive.google.com/file/d/1jDRwzd_idmeIxwAMN4q4bC89JKFiGXX7/view?usp=sharing) | Optional: the 7 new characters (**Google Drive**, updated in 1.4.3; WIP). |
-| `DBZ3HD-1.5.0-Kit-Modding.zip` | Optional: tools to create and import characters. |
-
-### Windows
-
-1. **Extract** `DBZ-Budokai-3-HD-Collection-v1.5.0.zip` into a folder, for
-   example `C:\Games\DBZ3\`.
-2. **Add the data from your copy of the game**, in one of two ways:
-   - **Easiest — the ISO**: drop the game's `.iso` next to `dbz3.exe`. Nothing
-     to extract. (Mods and new characters need the next option.)
-   - **The extracted folder** (needed for mods): put the `DBZ3\` folder exactly
-     as it comes off the disc next to `dbz3.exe`, or `default.xex` + the `us\`
-     (or `eu\`) folder.
-3. **Open `dbz3.exe`**. The launcher checks what you have and tells you what is
-   missing, if anything. You can also point it at your data with the folder or
-   ISO buttons. On the first start it follows your Windows language and a short
-   **First steps** window explains what to do (reopen it any time from the
-   button at the top).
-4. Pick region, language, video and sound, then press **PLAY** (or **START** on
-   the controller).
-
-> If something goes wrong, the launcher shows you where the log is (`logs\`).
-> Attach it when you open an issue.
-
-### Linux
-
-The package includes `dbz3` and `librexgpu-xenos.so`, but not the game. Extract
-the tarball, place your legally obtained `default.xex` and `us/` or `eu/` next
-to `dbz3`, then run `./dbz3`. See [`docs/LINUX.md`](docs/LINUX.md) for
-dependencies and local builds.
-
-### Valid file layouts
-
-```
-C:\Games\DBZ3\                 C:\Games\DBZ3\                 C:\Games\DBZ3\
-├── dbz3.exe                   ├── dbz3.exe                   ├── dbz3.exe
-├── default.xex                └── assets\                    └── DBZ3\            ← straight off the disc
-└── us\ (and/or eu\)               ├── default.xex                ├── yae3_xenon.xex
-                                   └── us\ (and/or eu\)           └── us\ (and/or eu\)
-```
-
-No need to rename the executable: the launcher finds it by **size and
-checksum**. If you drop the HD Collection menu instead of the Budokai 3
-executable, it tells you and blocks PLAY. The full original ISO (with the menu
-at the root) works too: the launcher takes the Budokai 3 executable from inside.
-
-### Which game files you need (extracted folder)
-
-Only the executable and your region's data, not the whole ISO:
-
-- **USA**: into `us\` → `data_cmn.afs`, `data_eng.afs`, `data_fra.afs`,
-  `data_ger.afs`, `data_ita.afs`, `data_spn.afs`, `data_usi.afs`,
-  `data_yah.afs`, `adx_jpn.afs`, `adx_usa.afs`, `lang_jpn.afs`,
-  `lang_usa.afs`, `opening.sfd`, `Ending00.sfd`, `Ending01.sfd`.
-- **EU/PAL**: the same files into `eu\`.
-
-You can verify them against `baserom.md`. To extract them from your legal ISO,
-use a tool such as `extract-xiso` (reads the Xbox 360 FATX filesystem).
-
----
-
-## Quick controls
-
-| Key / button | What it does |
-|---|---|
-| **F1** or **Back + Start** | In-game quick menu (picture, sound & pad, display). Can be switched to L3 + R3 or keyboard only. |
-| **F3** | FPS counter (game and display). |
-| **F4** | All settings (the launcher, over the game). |
-| **LB / RB** or **Ctrl + Tab** | Switch launcher tabs. |
-| **A / B** | Select / go back in the launcher (B or Esc also closes its windows). |
-| **START** | PLAY from the launcher. |
-
-The launcher's hint bar shows keys or buttons (Xbox, PlayStation or Switch)
-depending on what you used last.
-
-### Launcher tabs
-
-| Tab | What you do there |
-|---|---|
-| **Video**, **Upscaling**, **Audio** | Picture, upscaling (FSR, DLSS...), sound and the launcher/game language. |
-| **Input** | Controller and keyboard. To change a key, press the keyboard button next to its box and then the key. |
-| **Mods** | Your installed mods: tick to turn one on or off; drag a `.zip` onto the window to install it. |
-| **Nova's Mods** | The project's mods (characters, stories, HD textures): one-click download and update. |
-| **Game** | The new modes (HUB, Tag Team, Online, transformation selector; all beta), quick start, save backup and HD shine. |
-| **Model Swap**, **Textures** | Give a character another one's model, or retouch its textures (need the modding kit). |
-| **New characters** | Turn new characters on or off, edit them and import them from other games (importing needs the kit). |
-| **Advanced** | Diagnostics only: nothing here is needed to play. |
-
-The **First steps** button at the top sums it all up in four steps.
-
----
-
-## Mods and new characters
-
-> Mods need the game data as a **folder** (ISO mode plays the game as it is).
-> New characters also need the **USA version**.
-
-### Character pack (`DBZ3HD-1.4.3-Personajes.zip`)
-
-Seven **new** characters in their own cells of the character-select wheel
-(they replace nobody): **Janemba, Android 19, Zarbon (with his transformation),
-Dodoria, Guldo, Jeice and Burter**. Zarbon and Dodoria bring the moves, combos
-and yells of their Budokai 1 version, and Zarbon, Dodoria and Android 19 their ultimate.
-
-> **WIP:** the ultimates and the movesets translated from Budokai 1 are a first
-> version and may have bugs.
-
-1. Close the game.
-2. Download the ZIP from [Google Drive](https://drive.google.com/file/d/1jDRwzd_idmeIxwAMN4q4bC89JKFiGXX7/view?usp=sharing) and copy its `mods`
-   folder next to `dbz3.exe` (if Windows asks, merge the folders: nothing of
-   yours is deleted).
-3. Open `dbz3.exe`, check the **New characters** tab and press **PLAY**.
-
-To remove one, untick it under **New characters → Installed**. Your saves are
-never touched.
-
-### Modding kit (`DBZ3HD-1.5.0-Kit-Modding.zip`)
-
-The tools behind the launcher's modding tabs: create and **import characters**
-(Budokai 1, Budokai 2, Infinite World and community models), custom capsules,
-voices and yells, textures and model swap.
-
-1. Copy the whole ZIP content into the game folder (`mod center hd` and
-   `awo_tools` must end up next to `dbz3.exe`). Python and its libraries come
-   inside the kit: there is nothing else to install.
-2. Open `dbz3.exe` → **New characters → Import a character from another game**:
-   pick the game, search the character, check the name (you see live how it will
-   look on the select screen) and press **Import**.
-3. Or open the **Mod Kit** window (`DBZ3_ModKit.bat`): characters, stories,
-   textures, model swaps and, in **Stories**, the **ready-made HUB challenges**
-   and the **tower of the week**.
-
-To import from other games, use **your own copies** in the `ps2_games` folder
-(read its `LEEME.txt`). Super Dragon Ball Heroes and Shin Budokai 1/2 are
-detected but still in development.
-
-### Other mods
-
-Mods live in `mods\<name>\` and replace AFS entries through an overlay, without
-touching the original AFS files:
-
-```
-mods/<mod>/us/data_cmn.afs/<entry>/geom.bin   # override of one AFS entry
-mods/<mod>/manifest.txt                       # metadata (name, author...)
-mods/<mod>/.disabled                          # if present, the mod is OFF
-```
-
-They are managed from the launcher (**Mods**, **Nova's Mods**, **Textures**,
-**Model Swap** and **New characters** tabs) or with the tools in `mod center hd/`. Guides in
-[`docs/02_mods/`](docs/02_mods/) and the capsule format in
-[`docs/03_formatos/CAPSULAS_B3.md`](docs/03_formatos/CAPSULAS_B3.md).
-
-**Model swaps in any direction (virtual mid-insert).** A B3→B3 swap is a
-per-entry override (~100 KB) served even when the binary is **larger** than the
-original slot: the runtime presents the game a consistent AFS table and
-translates the reads. That is how, for example, putting Goten into Krillin's
-slot works.
-
-**New select-screen cells.** Since v1.4.0 the runtime can also **append**
-entries after the last one of an AFS, and the executable extends the select
-wheel with new cells. The builder `mod center hd/roster_build.py` turns
-`personaje.toml` folders into the generated mod `mods/_roster` (icons, name
-banners, portraits, health-bar face, capsules and yells), and the launcher
-rebuilds it automatically when you press PLAY.
-
----
+> [!IMPORTANT]
+> **No game files are included.** You need your **own Xbox 360 copy** of Dragon Ball Z: Budokai HD Collection (the **USA** disc).
 
 ## Features
 
-**One universal executable**
+- **60 fps** at 720p (the Xbox 360's), **1440p** (the default) or 4K, with anisotropic filtering.
+- **PlayStation buttons**: the game's button pictures in the menus and help bars are PlayStation ones, OPTIONS and the touch pad included, and the Controller screen shows a DualSense with its lines pointing at the right buttons. The Xbox originals are one setting away.
+- **Trophies**: Budokai 3's 23 achievements as trophies, plus a platinum. A popup shows in the corner when you earn one, and the hub's Trophies page lists them.
+- **Two players** on two DualSense controllers.
+- **Online versus (beta)**: PS5 against PS5, with a room code you enter with the controller.
+- **The hub**: Home, Settings, Saves, Trophies and About pages, with menu music (a random song each time, **R3** for the next), an FPS counter, and the game's text in English, French or Spanish.
+- **Save backups**: back up your saves from the hub.
 
-- A single `dbz3.exe` (baseline SSSE3 runtime) that runs on any x64 CPU (Core 2
-  2006 onwards), with no variants.
-- **USA/EU dual core** with both recompilations inside and **executable
-  auto-detection** by size and checksum.
-- **Disc (ISO) mode**: play straight from the `.iso` without extracting anything.
+NovaPowers' fixes and additions to the game come with it. See [his README](README-DBZ-Budokai-3-HD-Collection.md) for those.
 
-**Video and performance**
+## Install
 
-- **FSR 1 / CAS**, **FXAA** and dither; internal resolution, MSAA and
-  anisotropic filtering. **Applied live**, no restart.
-- **More FPS with FSR** (Quality / Balanced / Performance / Ultra performance):
-  renders below your resolution and FSR upscales it.
-- **FPS panel (F3)** with game FPS, display FPS and a frame-time graph.
-- **VRR** and a real **frame cap**; **per-GPU quality presets**.
-- **Texture enhancement (experimental)** at runtime and **texture packs**.
+You need a jailbroken PS5 that runs homebrew apps from `/data/homebrew/`, with a homebrew launcher that lists them.
 
-**Audio and controls**
+**With [Recomp Store](https://recompstore.com):** install Dragon Ball Z Budokai 3 and give it your disc image. It puts the app in `/data/homebrew/PPSA93004/` and the game in its `Assets/` folder. Start the app and press **START GAME**.
 
-- Real **master volume** and **Mute**, applied on the fly.
-- **Gamepad (XInput / SDL)** or keyboard, with remappable keys, deadzone, rumble
-  and Xbox, PlayStation and Switch button names.
-- When you leave the window: **mute** and/or **dim** (optional).
+**By hand** (an FTP client):
 
-**Launcher**
+1. Download `PPSA93004.zip` from [Releases](../../releases) and unzip it on your PC.
+2. Over FTP, copy the `PPSA93004` folder into `/data/homebrew/`.
+3. Copy the `DBZ3` folder from your disc (extract the `.iso` with a tool such as extract-xiso) into `/data/homebrew/PPSA93004/Assets/`, so you have:
+   ```
+   /data/homebrew/PPSA93004/Assets/DBZ3/yae3_xenon.xex
+   /data/homebrew/PPSA93004/Assets/DBZ3/us/data_cmn.afs
+   /data/homebrew/PPSA93004/Assets/DBZ3/us/...
+   ```
+4. Start **Dragon Ball Z Budokai 3** from your homebrew launcher (with ShadowMountPlus, run its payload again so it picks up the new app) and press **START GAME**.
 
-- New design with cards and icons, a big **PLAY** button and **startup in under
-  a second**.
-- **Controller navigation** with a device-aware hint bar.
-- **5 languages** (ES/EN/IT/DE/FR, the Windows one on first start), clear
-  messages when the executable is the wrong one, one-click **Repair
-  installation** with a plain-language result, a **First steps** guide and an
-  update check.
-- **Portable, self-repairing** settings.
+The hub checks that the game's files are all there. The download's `HOW TO INSTALL.txt` has the same steps.
 
-**Mods**
+## Controls
 
-- **Per-entry AFS override** with **virtual mid-insert** and **appended
-  entries** (new characters).
-- **New characters** with icon, name banner, portraits and health-bar face
-  rendered from the model itself, with a live preview in the launcher.
-- **Importer** for Budokai 1, Budokai 2, Infinite World and community models
-  (`.amb`, `.amo` + `.amt`).
-- Per-character **capsules**, own **yells and voices** and **extra costumes**
-  for existing characters (`traje.toml`).
-- **B3↔B3 model swap** (183-character catalog) and **textures** (PNG).
-
-**Diagnostics (optional)**
-
-- **Advanced** tab: I/O and performance logging and GPU diagnostic knobs. All
-  **off by default**.
-
----
-
-## Status
-
-| Technique | Status |
+| DualSense | Xbox 360 |
 |---|---|
-| Native B3→B3 swap (~100 KB override) | Works in any direction (bins > or < slot) |
-| B3 HD texture mod | Works (per-entry override) |
-| 2+ simultaneous model/texture mods | Works (virtual mid-insert) |
-| Music mod (og_music) | Works |
-| Play from the ISO (disc mode) | Works (base game; mods need the folder) |
-| USA/EU dual core (single binary) | Works (validated in-game) |
-| New characters in their own cells | Works, experimental (USA version) |
-| B1 / B2 / IW → B3 character ports | Works, experimental (importer) |
-| Shin Budokai 1/2 and Super Dragon Ball Heroes | In development |
+| Cross / Circle / Square / Triangle | A / B / X / Y |
+| L1 / R1 | LB / RB |
+| L2 / R2 | LT / RT |
+| L3 / R3 | stick clicks |
+| Options | Start |
+| Touchpad click | Back |
 
----
+In the hub: **L1 / R1** change pages, the **D-pad** picks and changes settings, **Cross** selects, **Circle** goes back, **Options** starts the game, **R3** changes the song.
 
-## Repository layout
+For two players, the second controller has to be signed in to a PS5 user.
 
-```
-DBZ-Budokai-3-HD-Collection/
-├── default.xex               # NOT included. Game executable (USA or EU)
-├── us/  eu/                  # NOT included. Data of each region
-├── src/                      # Recompiler + launcher + mod system
-│   ├── main.cpp              #   entry point, window, crash handler
-│   ├── mods.cpp              #   mod system (AFS overlay)
-│   ├── roster_ext.cpp        #   new characters (template, capsules, yells)
-│   ├── select_ext.cpp        #   extended select wheel
-│   ├── launcher/             #   launcher UI (ui_kit) + mod pipeline
-│   └── ingame/               #   in-game menu and quick menu (quick_settings)
-├── generated/                # NOT included. Code derived from your .xex
-├── mod center hd/            # Python modding tools (roster_build, importar...)
-├── awo_tools/                # Format converters and RE (AWO/AWG, PS2→HD, B1)
-├── patches/                  # ReXGlue SDK overlay (see its README)
-├── mods/                     # User mods (empty)
-├── tools/                    # Release, modpack and utility scripts
-├── docs/                     # Full documentation
-├── CHANGELOG.md              # What's new per version
-├── baserom.md                # Required game files + how to extract them
-└── LICENSE                   # MIT (NovaPowers)
-```
+## Online (beta)
 
----
+In **Duel**, pick **ONLINE**. One player picks **HOST A MATCH** and gets a room code. The other enters it on **CODE** (up and down change a letter, left and right move along, Cross when it's done) and picks **JOIN**. Playing in the same house, use the code the host's screen shows under "From the same house". Over the internet, the host may need to forward UDP port 7777 on their router. Both PS5s need the same version.
 
-## USA / EU regions
+## Menu music
 
-The USA (`yae3_xenon.xex`) and EU (`yae3_xenon_eu.xex`) executables are
-different builds and the dual core includes the recompilation of each one. The
-launcher identifies which one you placed by checksum and uses the matching
-code; if they don't match, it warns you and blocks PLAY.
+Put your own songs (MP3, WAV, FLAC or OGG) in `/data/homebrew/PPSA93004/hub/music/`.
 
-The data region (the `us\` or `eu\` folder) and the language are chosen in the
-launcher. Saves are shared between regions. The v1.4.0 new characters only
-apply with the **USA** executable and data.
+## Updating
 
----
+Copy a newer `PPSA93004` folder over the old one, or update from Recomp Store. The game (`Assets`), your saves and trophies (`user_data`) and your settings are kept.
+
+## Known issues
+
+- At 4K the busiest fights can drop below 60 fps. 1440p holds 60.
+- Online only works PS5 to PS5, not with the PC version.
+- Only the USA disc is supported.
+- The PC version's launcher and F1 menu aren't on the PS5: the hub has the settings that matter there.
+
+## Reporting a problem
+
+Report bugs on the **[RIPALDA Discord](https://discord.gg/GgDE5Vynyu)**. Send the newest file from `/data/homebrew/PPSA93004/logs/` (and `crashes/` if there is one), with what you were doing.
+
+> [!TIP]
+> ### 💙 Enjoying the port?
+> If you've gotten some enjoyment out of this project, donations and love are always appreciated. Every bit helps keep these ports growing. Thank you!
+>
+> [![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/ripalda)
 
 ## Building from source
 
-You need a C++23 compiler (LLVM clang on Windows), CMake ≥ 3.25 and the
-[ReXGlue SDK](https://github.com/rexglue/rexglue-sdk) **v0.10.0** with our
-overlay applied.
+The repository's root is DBZ Budokai 3 HD Collection as NovaPowers made it (its Windows and Linux build: see [`README-DBZ-Budokai-3-HD-Collection.md`](README-DBZ-Budokai-3-HD-Collection.md)), with the PS5 changes marked `[ps5 port]` in `src/`. The PS5 port is in [`ps5/`](ps5): the hub, the PS5 start-up, the trophies, the build and the packaging. The runtime with its PS5 layer is `dbz-budokai3-ps5-runtime-v1.0-source.zip` on the [release](../../releases/latest).
 
-> Copy `patches/rexglue-sdk/.` over a clean checkout of the SDK's `v0.10.0` tag
-> (see `patches/README.md`) and build the runtime. Without the overlay, large
-> swaps, new characters and the quick menu do not work.
+You need the runtime (with its `thirdparty/` filled from ReXGlue 0.10.0's submodules), [ps5-plume-triangle](https://github.com/Nazky/ps5-plume-triangle) built once, and your own `yae3_xenon.xex` (the USA disc's `DBZ3/yae3_xenon.xex`) at the root:
 
-```
-git clone --recurse-submodules https://github.com/novapowers0/DBZ-Budokai-3-HD-Collection.git
-cd DBZ-Budokai-3-HD-Collection
-
-# 1) place your legal .xex as default.xex
-# 2) regenerate the code derived from the xex
-cmake --build out/build/win-amd64-release --target dbz3_codegen
-# 3) build
-cmake -S . -B out/build/win-amd64-release
-cmake --build out/build/win-amd64-release
-# 4) run
-out\build\win-amd64-release\dbz3.exe
+```sh
+rexglue codegen dbz3_manifest.toml
+python3 ps5/tools/ps5_patch_generated.py
+cmake -S . -B out/ps5 -G Ninja -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_TOOLCHAIN_FILE=ps5/cmake/ps5-toolchain.cmake \
+  -DPS5_PAYLOAD_SDK=<plume>/.deps/native/ps5-payload-sdk \
+  -DREXSDK_DIR=<runtime> -DREXGLUE_HOST_TOOL=<host rexglue>
+ninja -C out/ps5 dbz3
+ps5/tools/ps5_package.sh out/ps5 <plume> PPSA93004
 ```
 
-The recompiled code (`generated/`) is derived from your `.xex` and never
-uploaded (see `generated/README.md` and `.gitignore`). The release package is
-assembled by `tools/make_release.ps1` and the modpacks by
-`tools/make_modpacks.py`.
-
----
-
-## Support the project
-
-<p align="center"><a href="https://ko-fi.com/novapowers"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi"></a></p>
-
-If you enjoy my open-source contributions to reverse engineering, static recompilation, and classic software preservation tools, please consider supporting my work. Every coffee helps me dedicate more time to writing and optimizing code for the community. Thank you!
-
-The game and all of its content stay free; supporting is completely optional.
-
----
+The app folder lands in `out/ps5/ps5-app/PPSA93004`. Packaging also draws the PlayStation buttons (Python 3 with Pillow, NumPy, OpenCV and Shapely). The hub's pictures and the DualSense picture go in `ps5/art/local/` and aren't in the repository. More in [`ps5/README.md`](ps5/README.md).
 
 ## Credits
 
-- **🇮🇹⚠ 𝐒𝐏𝐈𝐃𝐄𝐑 ⚠🇮🇹** — decompilation of *Dragon Ball Z: Infinite World*, the base we used to port the Infinite World
-  campaign (map, missions, minigames and animations).
-- **@ArielPVB**: Guldo, Jeice, Burter, Zarbon (base and monster form), Dodoria
-  and Android 19 models in the character pack.
-- [ReXGlue SDK](https://github.com/rexglue/rexglue-sdk) — static recompilation
-  tools and runtime (derived from [Xenia](https://xenia.jp)).
-- [DBZ Burst Limit Recompiled](https://github.com/iExplosiveRage/DBZ-Burst-Limit-Recompiled)
-  by **iExplosiveRage** — inspiration and source of the SDK improvements adapted
-  in v1.4.0 (controller quick menu, FPS panel, live video settings, FSR below
-  native resolution), taken from the `burstlimit` branch of
-  [iExplosiveRage/rexglue-sdk](https://github.com/iExplosiveRage/rexglue-sdk).
-- [WistfulHopes/DBZ1](https://github.com/WistfulHopes/DBZ1) — SDK API reference
-  (reference only; not a base or a code copy).
-- The Budokai modding community — tools, reference lists and the models and
-  Infinite World ports the character pack is based on.
-- [SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB) —
-  controller mappings (`gamecontrollerdb.txt`).
-- **NovaPowers** — author of the launcher, the mod system and the tools.
+- **[NovaPowers](https://github.com/novapowers0)**: [DBZ Budokai 3 HD Collection](https://github.com/novapowers0/DBZ-Budokai-3-HD-Collection), the recompilation, PC port, mod system and game fixes this port is built on.
+- **[ReXGlue](https://github.com/rexglue/rexglue-sdk)**: the static recompiler and runtime.
+- **[Xenia](https://xenia.jp)**: the Xbox 360 emulator the runtime's code comes from.
+- **PS5 tooling**: the PS5 Payload SDK; Nazky's [ps5-plume-triangle](https://github.com/Nazky/ps5-plume-triangle) and mihawk-99's RADV link recipe; Mesa RADV.
+- **Libraries**: Dear ImGui, stb_image, stb_vorbis, dr_mp3, dr_flac; Oswald, Inter and M PLUS Rounded 1c fonts (SIL Open Font License).
+- **[@elripalda](https://github.com/elripalda)**: the PS5 port, its hub, the trophies and the PlayStation buttons. Developed with [Claude Code](https://claude.com/claude-code).
+
+## Disclaimer
+
+An unofficial fan project, not affiliated with or endorsed by Bandai Namco, Dimps, Shueisha, Toei Animation, Microsoft or Sony. Dragon Ball Z and all related names and art belong to their owners. This repository and its releases contain no game files: you need your own copy of the game. NovaPowers' code is under the [MIT License](LICENSE); code from other projects keeps its own licence (see [THIRD_PARTY.md](THIRD_PARTY.md)).
