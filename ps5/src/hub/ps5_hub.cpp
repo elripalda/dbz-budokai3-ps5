@@ -301,6 +301,7 @@ class HubDialog final : public rex::ui::ImGuiDialog {
         {kR1, "R1"},       {kOptions, "Options"}, {kLeft | kRight, "D-Pad"}, {kR3, "R3"}};
     for (const auto& [b, n] : names)
       if (Image img = Load(immediate, hub / "buttons" / (std::string(n) + ".png"))) a.buttons[b] = img;
+    hub_.SetImageLoader([this, immediate](const fs::path& file) { return Load(immediate, file); });
     hub_.Init(paths, a, BUDOKAI3_VERSION);
     StyleGameDialogs(a);
     audio_ = std::make_unique<HubAudio>(hub, hub_.MusicVolume());

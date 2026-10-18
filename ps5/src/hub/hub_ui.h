@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "hub_install.h"
+#include "hub_trophies.h"
 #include "imgui.h"
 
 namespace budokai3::hub {
@@ -90,7 +91,7 @@ struct Audio {
 };
 
 // The pages, in the order of the top bar.
-enum Tab { kHome, kSettingsTab, kSavesTab, kAboutTab, kTabCount };
+enum Tab { kHome, kSettingsTab, kSavesTab, kTrophiesTab, kAboutTab, kTabCount };
 
 class Hub {
  public:
@@ -108,6 +109,8 @@ class Hub {
   void SetHasMusic(bool on) { music_ = on; }
   // Settings' Menu Music (hub_music_volume, 50% when not set), 0..1.
   float MusicVolume() const;
+  // What loads a picture (a PNG) for the hub: the trophies' (none: drawn without them).
+  void SetImageLoader(std::function<Image(const std::filesystem::path&)> load) { load_image_ = std::move(load); }
 
   struct Setting;
 
@@ -146,6 +149,17 @@ class Hub {
   void DrawSettings();
   void DrawSaves();
   void DrawAbout();
+  // the Trophies page (hub_trophies_page.cpp)
+  struct TrophyItem {
+    int index;  // in trophies_.trophies; -1: the platinum
+    int group;  // 0 earned, 1 not yet
+  };
+  void LoadTrophies();
+  void DrawTrophies();
+  void TrophySummary();
+  void TrophyIcon(int index, float x, float y, float size, float over);
+  Image TrophyPicture(int index);
+  void Empty(const char* title, const std::string& text);
   void GoTo(int tab, float dir);
   void PageTitle(const char* title, const std::string& subtitle);
   // A scrolled list with headings at the page's left: rows' items are
@@ -198,6 +212,11 @@ class Hub {
 
   int tab_ = 0;
   int item_[8] = {};  // the focused row on each page
+  // trophies
+  trophies::List trophies_;
+  std::vector<TrophyItem> trophy_items_;
+  std::map<uint32_t, Image> trophy_pictures_;  // by image ID (0: the game's own picture, the platinum's)
+  std::function<Image(const std::filesystem::path&)> load_image_;
   bool launch_ = false;
   std::string toast_;
   float toast_time_ = 0;

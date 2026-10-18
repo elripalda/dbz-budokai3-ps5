@@ -23,6 +23,14 @@ class OnlinePanel : public rex::ui::ImGuiDialog {
  private:
   uint16_t Pad();   // botones recien pulsados del mando local (la palanca izquierda cuenta como cruceta)
   void DrawScreen(ImGuiIO& io, uint16_t pressed);
+#if defined(__PROSPERO__)
+  // [ps5 port] No keyboard on the PS5: the room code is picked a letter at a time with the controller.
+  void EditCode(uint16_t pressed);
+  void DrawCode(ImDrawList* dl, ImVec2 center, float size, float s, float t);
+  int code_pos_ = 0;           // the letter being changed (0-9)
+  double held_since_ = 0;      // up/down held: the letter keeps turning
+  double repeat_at_ = 0;
+#endif
   bool blocked_ = false;
   uint16_t last_buttons_ = 0;
   int last_link_ = 0;   // Link de la ultima vez (para abrir al perder la conexion)

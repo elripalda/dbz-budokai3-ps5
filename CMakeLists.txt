@@ -154,7 +154,7 @@ if(REX_PS5)
     set_source_files_properties(${DBZ3_GAME_SOURCES} PROPERTIES
         COMPILE_OPTIONS "-include;${CMAKE_CURRENT_SOURCE_DIR}/ps5/src/ps5_shims.h")
     # The port's own: the hub, its settings, crash reports.
-    set(BUDOKAI3_VERSION "0.0.5 Beta" CACHE STRING "The PS5 port's version (the hub shows it)")
+    set(BUDOKAI3_VERSION "0.0.6 Beta" CACHE STRING "The PS5 port's version (the hub shows it)")
     list(APPEND DBZ3_SOURCES
         ps5/src/budokai3_ps5.cpp
         ps5/src/ps_button_pack.cpp
@@ -166,7 +166,10 @@ if(REX_PS5)
         ps5/src/hub/hub_ui.cpp
         ps5/src/hub/ps5_hub.cpp
         ps5/src/hub/hub_sfx.cpp
-        ps5/src/hub/hub_install.cpp)
+        ps5/src/hub/hub_install.cpp
+        ps5/src/hub/hub_trophies.cpp
+        ps5/src/hub/hub_trophies_page.cpp
+        ps5/src/ps5/trophies_game.cpp)
     # (its functions stay hidden: the PS5 target otherwise sets visibility from DLL storage class)
     set_source_files_properties(ps5/src/ps5_libc_own.cpp PROPERTIES
         COMPILE_OPTIONS "-fno-visibility-from-dllstorageclass")

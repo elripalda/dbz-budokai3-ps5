@@ -87,6 +87,7 @@ REXCVAR_DECLARE(bool, dbz3_skip_launcher);
 #include "budokai3_ps5.h"
 #include "crash_report.h"
 #include "hub/ps5_hub.h"
+#include "ps5/trophies_game.h"
 static bool SkipLauncher() { return true; }
 #else
 static bool SkipLauncher() { return REXCVAR_GET(dbz3_skip_launcher); }
@@ -607,6 +608,18 @@ public:
         });
 
     }
+
+#if defined(__PROSPERO__)
+    // [ps5 port] Achievements as PS5-style trophies (ps5/src/ps5/trophies_game.h):
+    // the popup in place of the runtime's toast, and the list for the hub's page.
+    std::unique_ptr<rex::ui::AchievementNotificationDialog> CreateAchievementNotificationDialog() override {
+        if (!imgui_drawer() || !immediate_drawer() || !runtime()) return nullptr;
+        return std::make_unique<budokai3::TrophyPopup>(imgui_drawer(), immediate_drawer(), runtime());
+    }
+    void OnPostLoadXexImage() override {
+        budokai3::WriteTrophyCatalog(runtime(), dbz3::settings::UserDataRoot());
+    }
+#endif
 
     // Called immediately before the main guest thread is created
     void OnPreLaunchModule() override {

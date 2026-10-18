@@ -498,11 +498,25 @@ bool Session::Host(uint16_t port, uint8_t delay, std::string* error) {
     addrinfo hints{}, *res = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
+#if defined(__PROSPERO__)
+    bool resolved = getaddrinfo("stun.l.google.com", "19302", &hints, &res) == 0 && res;
+#else
     const bool resolved = getaddrinfo("stun.l.google.com", "19302", &hints, &res) == 0 && res;
+#endif
     if (resolved) {
       std::memcpy(&stun, res->ai_addr, sizeof(stun));
       freeaddrinfo(res);
     }
+#if defined(__PROSPERO__)
+    // [ps5 port] A homebrew app may have no name lookup: stun.l.google.com's usual address then.
+    if (!resolved) {
+      stun.sin_family = AF_INET;
+      stun.sin_port = htons(19302);
+      stun.sin_addr.s_addr = htonl((74u << 24) | (125u << 16) | (250u << 8) | 129u);
+      resolved = true;
+      REXLOG_INFO("dbz3 online: no name lookup; STUN at 74.125.250.129");
+    }
+#endif
     {
       std::lock_guard<std::recursive_mutex> io(io_mu_);
       std::lock_guard<std::mutex> lock(mu_);
@@ -1227,6 +1241,23 @@ std::string Session::LocalAddresses() const {
     if (out.find(ip) == std::string::npos) out += (out.empty() ? "" : "  ") + std::string(ip);
   }
   freeaddrinfo(res);
+#elif defined(__PROSPERO__)
+  // [ps5 port] The PS5 has no getifaddrs: a UDP socket "connected" to a public
+  // address (nothing is sent) gets the address of the network it would go out on.
+  const int s = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  if (s < 0) return out;
+  sockaddr_in to{}, me{};
+  to.sin_family = AF_INET;
+  to.sin_port = htons(53);
+  to.sin_addr.s_addr = htonl(0x08080808);   // 8.8.8.8
+  socklen_t len = sizeof(me);
+  if (::connect(s, reinterpret_cast<sockaddr*>(&to), sizeof(to)) == 0 &&
+      getsockname(s, reinterpret_cast<sockaddr*>(&me), &len) == 0 && me.sin_addr.s_addr != 0) {
+    char ip[64] = {};
+    inet_ntop(AF_INET, &me.sin_addr, ip, sizeof(ip));
+    if (std::string(ip) != "127.0.0.1") out = ip;
+  }
+  ::close(s);
 #else
   ifaddrs* ifs = nullptr;
   if (getifaddrs(&ifs) != 0) return out;

@@ -202,6 +202,18 @@ void MakeBack() {
 
 }  // namespace
 
+namespace {
+// A built-in pack first in the game's list (a small pack wins over an HD one).
+void UsePack(const fs::path& dir) {
+  std::string list = rex::cvar::GetFlagByName("dbz3_texture_packs");
+  const std::string d = rex::path_to_utf8(dir);
+  if (list.find(d) == std::string::npos) {
+    list = list.empty() ? d : d + ";" + list;
+    rex::cvar::SetFlagByName("dbz3_texture_packs", list);
+  }
+}
+}  // namespace
+
 void PrepareButtonPack() {
   std::error_code ec;
   if (!PlayStation() || !fs::is_directory(PackDir(), ec)) {
@@ -209,13 +221,8 @@ void PrepareButtonPack() {
     return;
   }
   MakeBack();
-  std::string list = rex::cvar::GetFlagByName("dbz3_texture_packs");
-  const std::string dir = rex::path_to_utf8(PackDir());
-  if (list.find(dir) == std::string::npos) {
-    list = list.empty() ? dir : dir + ";" + list;
-    rex::cvar::SetFlagByName("dbz3_texture_packs", list);
-  }
-  REXLOG_INFO("[budokai3] PS buttons: on ('{}')", list);
+  UsePack(PackDir());
+  REXLOG_INFO("[budokai3] PS buttons: on ('{}')", rex::cvar::GetFlagByName("dbz3_texture_packs"));
 }
 
 bool PsButtonPicture(const char* name, std::vector<uint8_t>& rgba, int& width, int& height, float& game_width,

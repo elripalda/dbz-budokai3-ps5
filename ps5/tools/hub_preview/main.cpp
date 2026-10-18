@@ -130,7 +130,11 @@ int main(int argc, char** argv) {
       }
   }
   Hub hub;
-  Paths paths{app, app + "/dbz3.toml", app + "/user_data"};
+  Paths paths{app, app + "/dbz3.toml", app + "/user_data/dbz3"};
+  hub.SetImageLoader([](const std::filesystem::path& file) {
+    Tex* t = LoadPng(file.string());
+    return t ? Image{reinterpret_cast<ImTextureID>(t), float(t->w), float(t->h)} : Image{};
+  });
   hub.Init(paths, a, std::getenv("HUB_VERSION") ? std::getenv("HUB_VERSION") : "");
   hub.SetHasMusic(true);
   std::vector<uint32_t> script;

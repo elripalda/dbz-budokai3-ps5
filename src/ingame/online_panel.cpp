@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cctype>
 #include <cfloat>
 #include <chrono>
 #include <cstdio>
@@ -29,6 +30,7 @@
 #include "../launcher/novas_mods.h"
 #include "../launcher/settings.h"
 #include "../net/netplay.h"
+#include "../net/room.h"
 #include "../launcher/ui_kit.h"
 #include "game_style.h"
 #include "native_ui.h"
@@ -527,6 +529,70 @@ uint16_t OnlinePanel::Pad() {
   return pressed;
 }
 
+#if defined(__PROSPERO__)
+namespace {
+constexpr char kCodeAlpha[] = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";   // room.cpp's
+int CodeIndex(int pos) { return pos < 5 ? pos : pos + 1; }          // (the dash in the middle)
+}  // namespace
+
+// [ps5 port] The room code with the controller: up/down turn the letter, left/right move along
+// (held up/down keep turning), Cross or Circle end it.
+void OnlinePanel::EditCode(uint16_t pressed) {
+  constexpr uint16_t kUp = 0x0001, kDown = 0x0002, kLeft = 0x0004, kRight = 0x0008, kA = 0x1000, kB = 0x2000;
+  bool valid = std::strlen(ip_) == 11 && ip_[5] == '-';
+  for (int i = 0; valid && i < 10; ++i) {
+    char& ch = ip_[CodeIndex(i)];
+    ch = char(std::toupper(static_cast<unsigned char>(ch)));
+    valid = std::strchr(kCodeAlpha, ch) != nullptr;
+  }
+  if (!valid) {   // (the last code, or zeros to start from)
+    std::snprintf(ip_, sizeof(ip_), "00000-00000");
+    code_pos_ = 0;
+  }
+  code_pos_ = std::clamp(code_pos_, 0, 9);
+  const double now = ImGui::GetTime();
+  const uint16_t held = g_pad.load();
+  int turn = (pressed & kUp) ? 1 : (pressed & kDown) ? -1 : 0;
+  if (turn) {
+    repeat_at_ = now + 0.4;
+  } else if ((held & (kUp | kDown)) && now >= repeat_at_) {
+    turn = (held & kUp) ? 1 : -1;
+    repeat_at_ = now + 0.07;
+  }
+  if (turn) {
+    char& ch = ip_[CodeIndex(code_pos_)];
+    const int n = int(sizeof(kCodeAlpha)) - 1;
+    ch = kCodeAlpha[(int(std::strchr(kCodeAlpha, ch) - kCodeAlpha) + turn + n) % n];
+  }
+  if (pressed & kLeft) code_pos_ = (code_pos_ + 9) % 10;
+  if (pressed & kRight) code_pos_ = (code_pos_ + 1) % 10;
+  if (pressed & kA) {
+    editing_ = false;
+    row_ = 1;   // JOIN
+  } else if (pressed & kB) {
+    editing_ = false;
+  }
+}
+
+void OnlinePanel::DrawCode(ImDrawList* dl, ImVec2 c, float size, float s, float t) {
+  namespace S = dbz3::ingame::style;
+  const float step = size * 0.66f;
+  const int cur = CodeIndex(code_pos_);
+  for (int i = 0; i < 11; ++i) {
+    const char ch[2] = {ip_[i], 0};
+    const ImVec2 at(c.x + (i - 5) * step, c.y);
+    S::MenuText(dl, at, size, ch, i == cur, false);
+    if (i != cur) continue;
+    // the letter being changed: a small arrow above it and one below
+    const float bob = 1.5f * s * std::sin(t * 6.0f), w = 8 * s, h = 8 * s;
+    const ImU32 col = IM_COL32(2, 210, 231, 255);
+    const float up = c.y - 22 * s - bob, down = c.y + 22 * s + bob;
+    dl->AddTriangleFilled(ImVec2(at.x, up - h), ImVec2(at.x + w, up), ImVec2(at.x - w, up), col);
+    dl->AddTriangleFilled(ImVec2(at.x - w, down), ImVec2(at.x + w, down), ImVec2(at.x, down + h), col);
+  }
+}
+#endif
+
 void OnlinePanel::OnDraw(ImGuiIO& io) {
   if (dbz3::GameDimmed()) return;   // fuera de la ventana: solo la pantalla oscura del juego
   native_ui::Prefetch();   // piezas del juego para las pantallas propias (una vez, en su hilo)
@@ -608,7 +674,13 @@ void OnlinePanel::OnDraw(ImGuiIO& io) {
   auto* bg = ImGui::GetBackgroundDrawList();
   auto* fg = ImGui::GetForegroundDrawList();
   const int v0 = bg->VtxBuffer.Size, f0 = fg->VtxBuffer.Size;
+#if defined(__PROSPERO__)
+  const bool code_input = editing_;   // (the Cross that ends it doesn't press the row again)
+  if (code_input) EditCode(pressed);
+  DrawScreen(io, code_input ? 0 : pressed);
+#else
   DrawScreen(io, editing_ ? 0 : pressed);   // escribiendo la IP, el teclado no mueve el menu
+#endif
   const float fade_in = std::clamp(float(ImGui::GetTime() - opened_at_) / 0.3f, 0.0f, 1.0f);
   FadeFrom(bg, v0, fade_in);
   FadeFrom(fg, f0, fade_in);
@@ -814,6 +886,11 @@ void OnlinePanel::DrawScreen(ImGuiIO& io, uint16_t pressed) {
         break;
       case kCancelRow: label = T::T("CANCELAR", "CANCEL"); break;
     }
+#if defined(__PROSPERO__)
+    if (rows[size_t(i)] == kIpRow && editing_) {
+      DrawCode(dl, c, 50 * a.s, a.s, t);
+    } else
+#endif
     if (rows[size_t(i)] == kIpRow && editing_) {
       // la IP se escribe con el teclado en la misma fila (Intro o Esc terminan)
       ImGui::SetNextWindowPos(ImVec2(r0.x + 40 * a.s, c.y - 26 * a.s), ImGuiCond_Always);
@@ -853,8 +930,15 @@ void OnlinePanel::DrawScreen(ImGuiIO& io, uint16_t pressed) {
         break;
       case kJoinRow:
       case kIpRow:
+#if defined(__PROSPERO__)
+        say += editing_ ? T::T("Arriba y abajo cambian la letra, izquierda y derecha pasan a la siguiente. Equis cuando este.",
+                               "Up and down change the letter, left and right move along. Cross when it's done.")
+                        : T::T("Pon el codigo de sala del anfitrion (pulsa Equis en CODIGO) y unete.",
+                               "Enter the host's room code (press Cross on CODE), then join.");
+#else
         say += T::T("Escribe el codigo de sala del anfitrion (pulsa A y usa el teclado; tambien vale su IP) y unete.",
                     "Type the host's room code (press A and use the keyboard; their IP also works), then join.");
+#endif
         break;
       case kPortRow:
         say += T::T("Puerto UDP. Al crear la partida el juego intenta abrirlo en tu router; si no puede, abrelo a mano.",
@@ -879,7 +963,11 @@ void OnlinePanel::DrawScreen(ImGuiIO& io, uint16_t pressed) {
         if (!std::getenv("DBZ3_NO_DIALOGS")) ImGui::SetClipboardText(code.c_str());
         copied_code_ = code;
       }
+#if defined(__PROSPERO__)
+      say += T::T("\nCodigo de sala: ", "\nRoom code: ") + code;   // [ps5 port] no clipboard
+#else
       say += T::T("\nCodigo de sala: ", "\nRoom code: ") + code + T::T("  (copiado)", "  (copied)");
+#endif
       if (link == Link::kWaiting && how != "local") {
         // el codigo lleva la IP publica: desde la misma casa muchos routers no dejan entrar por ella
         if (lan_.empty() || ImGui::GetTime() - lan_at_ > 5.0) {   // gethostname + DNS: no en cada fotograma
@@ -887,8 +975,19 @@ void OnlinePanel::DrawScreen(ImGuiIO& io, uint16_t pressed) {
           lan_ = lan_.substr(0, lan_.find(' '));
           lan_at_ = ImGui::GetTime();
         }
+#if defined(__PROSPERO__)
+        // [ps5 port] the other PS5 can only enter a code: the home network's as a code too
+        unsigned o[4];
+        if (std::sscanf(lan_.c_str(), "%u.%u.%u.%u", &o[0], &o[1], &o[2], &o[3]) == 4) {
+          const uint8_t b[4] = {uint8_t(o[0]), uint8_t(o[1]), uint8_t(o[2]), uint8_t(o[3])};
+          uint32_t ip = 0;
+          std::memcpy(&ip, b, 4);
+          say += T::T("\nDesde tu misma casa: ", "\nFrom the same house: ") + dbz3::net::EncodeRoom(ip, uint16_t(port_));
+        }
+#else
         if (!lan_.empty())
           say += T::T("\nDesde tu misma casa: ", "\nFrom the same house: ") + lan_;   // Join acepta IP (puerto: el de la fila)
+#endif
       }
       if (link == Link::kConnected && !s.mods_match()) {
         // sin la nota de red: el bocadillo no da para ella y la lista de mods

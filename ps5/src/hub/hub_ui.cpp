@@ -21,7 +21,7 @@ namespace budokai3::hub {
 
 namespace fs = std::filesystem;
 
-static const char* const kTabNames[kTabCount] = {"HOME", "SETTINGS", "SAVES", "ABOUT"};
+static const char* const kTabNames[kTabCount] = {"HOME", "SETTINGS", "SAVES", "TROPHIES", "ABOUT"};
 
 namespace {
 
@@ -119,6 +119,9 @@ static const std::vector<Hub::Setting>& Settings() {
       {"DISPLAY", "anisotropic_override", "Anisotropic Filter", nullptr,
        "Keeps the ground and the stages sharp when seen at an angle.", false, {"0", "2", "3", "4", "5"},
        {"Off", "2x", "4x", "8x", "16x"}, "3"},
+      {"DISPLAY", "budokai3_menu_borders", "Menu Borders", nullptr,
+       "The gold bars at the sides of the game's menus, as on the Xbox 360. Off leaves them out.", true,
+       {"off", "gold"}, {"Off", "Gold"}, "off"},
       {"DISPLAY", "budokai3_show_fps", "FPS Counter", nullptr,
        "Shows the game's frame rate in the top-left corner while you play.", false, {"false", "true"},
        {"Off", "On"}, "true"},
@@ -163,6 +166,7 @@ void Hub::Load() {
     config_.emplace_back(k, v);
   }
   LoadSaves();
+  LoadTrophies();
   // (the game's files come from Recomp Store: only whether they're there)
   state_ = install::Look(paths_.app);
 }
@@ -913,6 +917,7 @@ int Hub::Items() const {
   switch (tab_) {
     case kSettingsTab: return int(Settings().size());
     case kSavesTab: return 1 + int(backups_.size()) + int(save_items_.size());
+    case kTrophiesTab: return int(trophy_items_.size());
     default: return 0;
   }
 }
@@ -1054,6 +1059,7 @@ void Hub::GoTo(int tab, float dir) {
   panel_item_ = item_[tab_];
   // (what these pages show can change while the hub is open: looked at again)
   if (tab == kSavesTab) LoadSaves();
+  if (tab == kTrophiesTab) LoadTrophies();
 }
 
 bool Hub::Draw(const Pad& pad, float dt) {
@@ -1085,6 +1091,7 @@ bool Hub::Draw(const Pad& pad, float dt) {
     case kHome: DrawHome(); break;
     case kSettingsTab: DrawSettings(); break;
     case kSavesTab: DrawSaves(); break;
+    case kTrophiesTab: DrawTrophies(); break;
     case kAboutTab: DrawAbout(); break;
   }
   ox_ -= shift * s_;

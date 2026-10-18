@@ -102,6 +102,13 @@ if [[ -f $port/art/local/buttons/dualsense.png ]]; then
     python3 "$here/ps_controller.py" "$port/art/local/buttons/dualsense.png" \
         "$app/ps_buttons/pack/355BB8CF9E381EA7_512x256_RGBA8.png"
 fi
+# A shader cache to start from (art/local/shader_cache: the files from a PS5
+# that has played a lot, its user_data/dbz3/cache/shaders/shareable). The game
+# copies them in on a first start, so effects don't stutter the first time.
+if [[ -d $port/art/local/shader_cache ]]; then
+    mkdir -p "$app/shader_cache"
+    cp "$port"/art/local/shader_cache/* "$app/shader_cache/"
+fi
 # SDL's controller mappings (the PC port ships it next to the exe).
 if [[ -f $root/gamecontrollerdb.txt ]]; then cp "$root/gamecontrollerdb.txt" "$app/"; fi
 cat > "$app/sce_sys/param.json" <<EOF
