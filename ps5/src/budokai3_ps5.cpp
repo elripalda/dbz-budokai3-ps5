@@ -16,7 +16,7 @@
 REXCVAR_DEFINE_INT32(budokai3_resolution, 2, "Budokai3",
                      "Picture: 1 = 720p (the Xbox 360's), 2 = 1440p, 3 = 4K (everything drawn at that scale)")
     .range(1, 3);
-REXCVAR_DEFINE_BOOL(budokai3_show_fps, false, "Budokai3", "The game's frame rate in the corner");
+REXCVAR_DEFINE_BOOL(budokai3_show_fps, true, "Budokai3", "The game's frame rate in the corner");
 REXCVAR_DEFINE_INT32(budokai3_language, 1, "Budokai3", "Text language: 1 = English, 4 = French, 5 = Spanish")
     .range(1, 6);
 REXCVAR_DEFINE_STRING(budokai3_button_prompts, "playstation", "Budokai3",
@@ -27,19 +27,19 @@ namespace budokai3 {
 
 namespace {
 
-constexpr char kConfigVersion[] = "(settings v1)";
+constexpr char kConfigVersion[] = "(settings v2)";
 constexpr char kDefaultConfig[] =
-    "# DBZ Budokai 3 - settings (settings v1)\n"
+    "# DBZ Budokai 3 - settings (settings v2)\n"
     "gpu_plugin = \"xenos\"\n"
     "# 1 = 720p, 2 = 1440p, 3 = 4K\n"
     "budokai3_resolution = 2\n"
-    "anisotropic_override = 4\n"
+    "anisotropic_override = 3\n"
     "# text language: 1 English, 4 French, 5 Spanish\n"
     "budokai3_language = 1\n"
     "# the game's button pictures: playstation or xbox\n"
     "budokai3_button_prompts = \"playstation\"\n"
     "# the frame rate in the corner\n"
-    "budokai3_show_fps = false\n"
+    "budokai3_show_fps = true\n"
     "# the hub's menu music, 0-100 (%)\n"
     "hub_music_volume = 50\n"
     "vsync = true\n"
@@ -103,7 +103,7 @@ void ApplyPs5RuntimeSettings() {
   // its D3D12 shaders).
   rex::cvar::SetFlagByName("frame_cap", "0");
   rex::cvar::SetFlagByName("present_effect", "bilinear");
-  rex::cvar::SetFlagByName("swap_post_effect", "");
+  rex::cvar::SetFlagByName("swap_post_effect", "none");
   rex::cvar::SetFlagByName("vsync", "true");
   // Vblanks on time (the default timer fires them up to a millisecond late).
   rex::cvar::SetFlagByName("guest_vblank_hz", "60");

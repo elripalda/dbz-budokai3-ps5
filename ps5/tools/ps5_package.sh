@@ -135,6 +135,11 @@ EOF
 if [[ -d $port/art/local/hub ]]; then
     cp -r "$port/art/local/hub" "$app/hub"
 fi
+# The hub's button pictures (hub/buttons), from the PS5 button icons' SVGs
+# (art/local/hub-buttons: the white "full solid" set, your own).
+if [[ -d $port/art/local/hub-buttons ]]; then
+    python3 "$here/hub_buttons.py" "$port/art/local/hub-buttons" "$app/hub/buttons"
+fi
 # Home screen art (art/local/, your own; art/ the placeholders): icon0.png
 # 512x512, pic0.dds / pic1.dds the 3840x2160 BC7 background and launch splash.
 for asset in icon0.png pic0.dds pic1.dds; do

@@ -154,7 +154,7 @@ if(REX_PS5)
     set_source_files_properties(${DBZ3_GAME_SOURCES} PROPERTIES
         COMPILE_OPTIONS "-include;${CMAKE_CURRENT_SOURCE_DIR}/ps5/src/ps5_shims.h")
     # The port's own: the hub, its settings, crash reports.
-    set(BUDOKAI3_VERSION "test1" CACHE STRING "The PS5 port's version (the hub and the log show it)")
+    set(BUDOKAI3_VERSION "0.0.5 Beta" CACHE STRING "The PS5 port's version (the hub shows it)")
     list(APPEND DBZ3_SOURCES
         ps5/src/budokai3_ps5.cpp
         ps5/src/ps_button_pack.cpp
@@ -170,11 +170,11 @@ if(REX_PS5)
     # (its functions stay hidden: the PS5 target otherwise sets visibility from DLL storage class)
     set_source_files_properties(ps5/src/ps5_libc_own.cpp PROPERTIES
         COMPILE_OPTIONS "-fno-visibility-from-dllstorageclass")
+    # (the version only where it's shown: a new one rebuilds one file)
     set_source_files_properties(ps5/src/hub/ps5_hub.cpp PROPERTIES
-        COMPILE_DEFINITIONS "BUDOKAI3_FONTS_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/ps5/fonts\""
+        COMPILE_DEFINITIONS "BUDOKAI3_FONTS_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/ps5/fonts\";BUDOKAI3_VERSION=\"${BUDOKAI3_VERSION}\""
         OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ps5/fonts/oswald-latin-700-normal.ttf")
     add_executable(dbz3 ${DBZ3_SOURCES})
-    target_compile_definitions(dbz3 PRIVATE BUDOKAI3_VERSION="${BUDOKAI3_VERSION}")
     target_include_directories(dbz3 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/ps5/src)
     if(TARGET imgui)
         target_include_directories(dbz3 PRIVATE $<TARGET_PROPERTY:imgui,INTERFACE_INCLUDE_DIRECTORIES>

@@ -45,8 +45,23 @@ struct Pad {
 struct Image {
   ImTextureID id = 0;
   float width = 0, height = 0;
+  // the drawing's share of the picture, across and down (a button picture's
+  // drawing is centred in its square: ps5/tools/hub_buttons.py)
+  float fill_w = 1, fill_h = 1;
   explicit operator bool() const { return id != 0; }
 };
+
+// The part of a picture that isn't clear (alpha above 8), as fill_w / fill_h.
+inline void MeasureFill(Image& img, const unsigned char* rgba, int w, int h) {
+  int x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (int y = 0; y < h; ++y)
+    for (int x = 0; x < w; ++x)
+      if (rgba[(size_t(y) * w + x) * 4 + 3] > 8) {
+        x0 = x < x0 ? x : x0, x1 = x > x1 ? x : x1;
+        y0 = y < y0 ? y : y0, y1 = y > y1 ? y : y1;
+      }
+  if (x1 >= 0) img.fill_w = float(x1 - x0 + 1) / float(w), img.fill_h = float(y1 - y0 + 1) / float(h);
+}
 
 struct Assets {
   ImFont* display = nullptr;    // Oswald Bold: titles, the big button, numbers
@@ -222,7 +237,15 @@ class Hub {
   float Wrapped(ImFont* f, float size, float x, float y, float width, ImU32 col, const std::string& t,
                 float line = 1.4f);
   void Rect(float x, float y, float w, float h, ImU32 col, float r = 0);
-  void Glyph(uint32_t button, float cx, float cy, ImU32 col);  // a PlayStation button
+  // Text with its capitals centred on `cy` (Text's y is the top of its line).
+  void TextMid(ImFont* f, float size, float x, float cy, ImU32 col, const std::string& t, float align = 0,
+               float spacing = 0);
+  float CapMid(ImFont* f, float size) const;    // the capitals' middle, below the line's top
+  float Baseline(ImFont* f, float size) const;  // the baseline, below the line's top
+  // A PlayStation button centred on (cx, cy), its picture's square `size`
+  // across; returns the width of the button drawn in it.
+  float Glyph(uint32_t button, float cx, float cy, ImU32 col, float size);
+  float GlyphWidth(uint32_t button, float size) const;
   float Hint(float right, uint32_t button, const char* label);  // returns its left edge
   void Fade(int first_vertex, float alpha);                    // fades what was drawn since
 };

@@ -334,9 +334,10 @@ class HubDialog final : public rex::ui::ImGuiDialog {
     unsigned char* px = stbi_load(file.string().c_str(), &w, &h, &n, 4);
     if (!px) return {};
     auto tex = immediate->CreateTexture(uint32_t(w), uint32_t(h), rex::ui::ImmediateTextureFilter::kLinear, false, px);
+    Image img{reinterpret_cast<ImTextureID>(tex.get()), float(w), float(h)};
+    MeasureFill(img, px, w, h);
     stbi_image_free(px);
     if (!tex) return {};
-    Image img{reinterpret_cast<ImTextureID>(tex.get()), float(w), float(h)};
     g_textures->push_back(std::move(tex));
     return img;
   }
@@ -367,6 +368,8 @@ void ConfigureFonts(ImFontAtlas* atlas) {
 }
 
 const Assets& Fonts() { return g_assets; }
+
+const char* Version() { return BUDOKAI3_VERSION; }
 
 void Show(rex::ui::ImGuiDrawer* drawer, rex::ui::ImmediateDrawer* immediate, const Paths& paths,
           std::function<void()> launch) {

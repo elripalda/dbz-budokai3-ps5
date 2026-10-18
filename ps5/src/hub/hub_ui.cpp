@@ -118,10 +118,10 @@ static const std::vector<Hub::Setting>& Settings() {
        false, {"1", "2", "3"}, {"720p (Original)", "1440p", "4K"}, "2"},
       {"DISPLAY", "anisotropic_override", "Anisotropic Filter", nullptr,
        "Keeps the ground and the stages sharp when seen at an angle.", false, {"0", "2", "3", "4", "5"},
-       {"Off", "2x", "4x", "8x", "16x"}, "4"},
+       {"Off", "2x", "4x", "8x", "16x"}, "3"},
       {"DISPLAY", "budokai3_show_fps", "FPS Counter", nullptr,
        "Shows the game's frame rate in the top-left corner while you play.", false, {"false", "true"},
-       {"Off", "On"}, "false"},
+       {"Off", "On"}, "true"},
       {"GAME", "budokai3_language", "Text Language", "LANGUAGE",
        "The language of the game's menus and story text. The voices stay as the game has them.", false,
        {"1", "4", "5"}, {"English", "French", "Spanish"}, "1"},
@@ -408,21 +408,61 @@ void Hub::Rect(float x, float y, float w, float h, ImU32 col, float r) {
   dl_->AddRectFilled(P(x, y), P(x + w, y + h), col, r * s_);
 }
 
-// The DualSense's buttons: the pictures in hub/buttons, else drawn in one colour.
-void Hub::Glyph(uint32_t button, float cx, float cy, ImU32 col) {
+namespace {
+const ImFontGlyph* CapGlyph(ImFont* f) {
+  ImFontBaked* baked = f->GetFontBaked(f->LegacySize);
+  return baked ? baked->FindGlyphNoFallback('H') : nullptr;
+}
+}  // namespace
+
+float Hub::CapMid(ImFont* f, float size) const {
+  if (!f) f = ImGui::GetFont();
+  const ImFontGlyph* g = CapGlyph(f);
+  return g ? (g->Y0 + g->Y1) * 0.5f * size / f->LegacySize : size * 0.5f;
+}
+
+float Hub::Baseline(ImFont* f, float size) const {
+  if (!f) f = ImGui::GetFont();
+  const ImFontGlyph* g = CapGlyph(f);
+  return g ? g->Y1 * size / f->LegacySize : size * 0.8f;
+}
+
+void Hub::TextMid(ImFont* f, float size, float x, float cy, ImU32 col, const std::string& t, float align,
+                  float spacing) {
+  Text(f, size, x, cy - CapMid(f, size), col, t, align, spacing);
+}
+
+// The DualSense's buttons: the pictures in hub/buttons (each drawn centred in
+// its square, ps5/tools/hub_buttons.py), else drawn in one colour. `size` is
+// the button's longer side: a face button's width, the options button's height.
+float Hub::GlyphWidth(uint32_t button, float size) const {
+  if (auto it = a_.buttons.find(button); it != a_.buttons.end() && it->second)
+    return size * it->second.fill_w / std::max(it->second.fill_w, it->second.fill_h);
+  switch (button) {
+    case kL1:
+    case kR1: return size;
+    case kOptions: return size * 26 / 22;
+    default: return size;
+  }
+}
+
+float Hub::Glyph(uint32_t button, float cx, float cy, ImU32 col, float size) {
   if (auto it = a_.buttons.find(button); it != a_.buttons.end() && it->second) {
-    const float h = 24;  // (the pictures' buttons fill about two thirds of them)
-    dl_->AddImage(it->second.id, P(cx - h, cy - h), P(cx + h, cy + h), ImVec2(0, 0), ImVec2(1, 1), col);
-    return;
+    const Image& img = it->second;
+    const float h = size * 0.5f / std::max(img.fill_w, img.fill_h);
+    dl_->AddImage(img.id, P(cx - h, cy - h), P(cx + h, cy + h), ImVec2(0, 0), ImVec2(1, 1), col);
+    return GlyphWidth(button, size);
   }
   const ImVec2 c = P(cx, cy);
-  const float R = 15 * s_, k = 6.2f * s_, t = 2.2f * s_;
+  // (drawn: a face button 30 across, L1 / R1 40, the options button 22 tall)
+  const float u = size / (button == kL1 || button == kR1 ? 40 : button == kOptions ? 22 : 30) * s_;
+  const float R = 15 * u, k = 6.2f * u, t = 2.2f * u;
   switch (button) {
     case kCross:
     case kCircle:
     case kSquare:
     case kTriangle:
-      dl_->AddCircle(c, R, col, 40, 1.6f * s_);
+      dl_->AddCircle(c, R, col, 40, 1.6f * u);
       if (button == kCross) {
         dl_->AddLine(ImVec2(c.x - k, c.y - k), ImVec2(c.x + k, c.y + k), col, t);
         dl_->AddLine(ImVec2(c.x - k, c.y + k), ImVec2(c.x + k, c.y - k), col, t);
@@ -436,37 +476,40 @@ void Hub::Glyph(uint32_t button, float cx, float cy, ImU32 col) {
       }
       break;
     case kLeft | kRight: {
-      const float a = 7 * s_, gap = 5 * s_;
+      const float a = 7 * u, gap = 5 * u;
       dl_->AddTriangleFilled(ImVec2(c.x - gap, c.y - a), ImVec2(c.x - gap, c.y + a), ImVec2(c.x - gap - a * 1.2f, c.y), col);
       dl_->AddTriangleFilled(ImVec2(c.x + gap, c.y - a), ImVec2(c.x + gap, c.y + a), ImVec2(c.x + gap + a * 1.2f, c.y), col);
       break;
     }
     case kOptions:
-      dl_->AddRect(ImVec2(c.x - 13 * s_, c.y - 11 * s_), ImVec2(c.x + 13 * s_, c.y + 11 * s_), col, 6 * s_, 0, 1.6f * s_);
+      dl_->AddRect(ImVec2(c.x - 13 * u, c.y - 11 * u), ImVec2(c.x + 13 * u, c.y + 11 * u), col, 6 * u, 0, 1.6f * u);
       for (int i = -1; i <= 1; ++i)
-        dl_->AddLine(ImVec2(c.x - 6 * s_, c.y + i * 4.5f * s_), ImVec2(c.x + 6 * s_, c.y + i * 4.5f * s_), col, 1.8f * s_);
+        dl_->AddLine(ImVec2(c.x - 6 * u, c.y + i * 4.5f * u), ImVec2(c.x + 6 * u, c.y + i * 4.5f * u), col, 1.8f * u);
       break;
     case kR3:
-      dl_->AddCircle(c, R, col, 40, 1.6f * s_);
-      dl_->AddCircleFilled(c, R - 4 * s_, col, 40);
-      Text(a_.body_bold, 13, cx, cy - 8.5f, Black(1), "R3", 0.5f);
+      dl_->AddCircle(c, R, col, 40, 1.6f * u);
+      dl_->AddCircleFilled(c, R - 4 * u, col, 40);
+      TextMid(a_.body_bold, 13 * u / s_, cx, cy, Black(1), "R3", 0.5f);
       break;
     case kL1:
     case kR1:
-      dl_->AddRect(ImVec2(c.x - 20 * s_, c.y - 13 * s_), ImVec2(c.x + 20 * s_, c.y + 13 * s_), col, 7 * s_, 0, 1.6f * s_);
-      Text(a_.body_bold, 15, cx, cy - 9.5f, col, button == kL1 ? "L1" : "R1", 0.5f);
+      dl_->AddRect(ImVec2(c.x - 20 * u, c.y - 13 * u), ImVec2(c.x + 20 * u, c.y + 13 * u), col, 7 * u, 0, 1.6f * u);
+      TextMid(a_.body_bold, 15 * u / s_, cx, cy, col, button == kL1 ? "L1" : "R1", 0.5f);
       break;
   }
+  return GlyphWidth(button, size);
 }
 
-// One hint at the bottom, right-aligned at `right`: the button, then what it does.
+// One hint at the bottom, right-aligned at `right`: the button, then what it
+// does, both centred on the hints' line.
 float Hub::Hint(float right, uint32_t button, const char* label) {
-  const float tw = TextWidth(a_.body_bold, 20, label);
-  const float gw = (button == kL1 || button == kR1) ? 40 : 30;
+  constexpr float kLine = 1022, kSize = 20, kButton = 28, kGap = 11, kBetween = 40;
+  const float tw = TextWidth(a_.body_bold, kSize, label);
+  const float gw = GlyphWidth(button, kButton);
   const float x = right - tw;
-  Text(a_.body_bold, 20, x, 1010, White(0.78f), label);
-  Glyph(button, x - 12 - gw * 0.5f, 1023, White(0.9f));
-  return x - 12 - gw - 40;
+  TextMid(a_.body_bold, kSize, x, kLine, White(0.78f), label);
+  Glyph(button, x - kGap - gw * 0.5f, kLine, White(0.9f), kButton);
+  return x - kGap - gw - kBetween;
 }
 
 void Hub::PageTitle(const char* title, const std::string& subtitle) {
@@ -588,26 +631,30 @@ void Hub::DrawBackdrop() {
 
 
 void Hub::DrawTopBar() {
-  // the pages, between L1 and R1
-  constexpr float kSize = 26, kSpacing = 2.2f, kGap = 40;
+  // the pages, between L1 and R1: the buttons centred on the names' capitals,
+  // as far from the first and last names
+  constexpr float kSize = 26, kSpacing = 2.2f, kGap = 40, kTop = 52, kButton = 42, kButtonGap = 22;
+  const float cy = kTop + CapMid(a_.nav, kSize);
   float x = 112;
-  Glyph(kL1, x + 20, 70, White(0.55f));
-  x += 70;
+  const float l1 = GlyphWidth(kL1, kButton);
+  Glyph(kL1, x + l1 * 0.5f, cy, White(0.55f), kButton);
+  x += l1 + kButtonGap;
   float sel_x = 0, sel_w = 0;
   for (int i = 0; i < kTabCount; ++i) {
     const bool sel = i == tab_;
     const float w = TextWidth(a_.nav, kSize, kTabNames[i], kSpacing);
-    Text(a_.nav, kSize, x, 52, sel ? kText : White(0.5f), kTabNames[i], 0, kSpacing);
+    Text(a_.nav, kSize, x, kTop, sel ? kText : White(0.5f), kTabNames[i], 0, kSpacing);
     if (sel) sel_x = x, sel_w = w;
     x += w + kGap;
   }
-  Glyph(kR1, x - kGap + 34, 70, White(0.55f));
-  // the underline glides to the page, stretching on the way
+  x -= kGap;
+  Glyph(kR1, x + kButtonGap + GlyphWidth(kR1, kButton) * 0.5f, cy, White(0.55f), kButton);
+  // the underline, just under the names: it glides to the page, stretching on the way
   const float before = tab_x_;
   Ease(tab_x_, sel_x, 16);
   Ease(tab_w_, sel_w, 22);
   const float travel = std::min(60.0f, std::fabs(sel_x - before) * 0.25f);
-  Rect(tab_x_ - travel * 0.5f, 89, tab_w_ + travel, 4, kAccent, 2);
+  Rect(tab_x_ - travel * 0.5f, kTop + Baseline(a_.nav, kSize) + 4, tab_w_ + travel, 3, kAccent, 1.5f);
 }
 
 void Hub::DrawHints() {
@@ -626,7 +673,7 @@ void Hub::DrawHints() {
       if (item_[tab_] <= int(backups_.size())) r = Hint(r, kCross, item_[tab_] == 0 ? "Back Up" : "Restore");
       break;
   }
-  // a message (bottom left, rising in), or the version
+  // a message (bottom left, rising in)
   if (toast_time_ > 0) {
     const float a = Smooth(std::min(toast_time_ * 3, (3.0f - toast_time_) * 6));
     const float w = TextWidth(a_.body_bold, 20, toast_) + 44 + (toast_song_ ? 8 : 0);
@@ -640,9 +687,7 @@ void Hub::DrawHints() {
     } else {
       dl_->AddCircleFilled(P(132, y + 21), 4.5f * s_, WithAlpha(kAccent, a), 16);
     }
-    Text(a_.body_bold, 20, 146 + (toast_song_ ? 8 : 0), y + 8, White(0.92f * a), toast_);
-  } else {
-    Text(a_.body, 18, 112, 1012, White(0.32f), "Dragon Ball Z Budokai 3" + (version_.empty() ? "" : " " + version_) + "  \xC2\xB7  PlayStation 5");
+    TextMid(a_.body_bold, 20, 146 + (toast_song_ ? 8 : 0), y + 21, White(0.92f * a), toast_);
   }
 }
 
@@ -699,9 +744,13 @@ void Hub::DrawHome() {
                2 * s_);
   Rect(bx, by, bw, bh, Mix(kText, kAccent, press_ * 0.9f), 12);
   const ImU32 ink = Mix(kInk, kText, press_);
-  const float tx = bx + 40;
-  dl_->AddTriangleFilled(P(tx, by + bh * 0.5f - 15), P(tx + 26, by + bh * 0.5f), P(tx, by + bh * 0.5f + 15), ink);
-  Text(a_.display, 40, tx + 48, by + bh * 0.5f - 23, ink, "START GAME", 0, 2);
+  // the arrow and the words as one, centred in the button, the arrow on the words' capitals
+  constexpr float kArrowW = 24, kArrowH = 28, kArrowGap = 20, kSize = 40, kSpacing = 2;
+  const float cy = by + bh * 0.5f;
+  const float tw = TextWidth(a_.display, kSize, "START GAME", kSpacing);
+  const float tx = bx + (bw - (kArrowW + kArrowGap + tw)) * 0.5f;
+  dl_->AddTriangleFilled(P(tx, cy - kArrowH * 0.5f), P(tx + kArrowW, cy), P(tx, cy + kArrowH * 0.5f), ink);
+  TextMid(a_.display, kSize, tx + kArrowW + kArrowGap, cy, ink, "START GAME", 0, kSpacing);
   Fade(v0, in_btn);
 
 }
@@ -727,14 +776,15 @@ void Hub::DrawSettings() {
   const float x = kListX, w = kListW;
   List(rows, sel, 54, [&](int i, float yy, float over) {
     const auto& r = set[size_t(i)];
-    Text(a_.body_bold, 23, x + 24, yy + 11, Mix(White(0.92f), kInk, over), r.label);
+    const float cy = yy + 24;  // (the row's middle: its highlight is 48 tall)
+    TextMid(a_.body_bold, 23, x + 24, cy, Mix(White(0.92f), kInk, over), r.label);
     const std::string v = r.labels[size_t(SettingIndex(r))];
     if (i == sel) {
       // the value slides in from the side it was changed toward
-      const float vr = x + w - 46, cy = yy + 24;
+      const float vr = x + w - 46;
       const float slide = (1 - Smooth(value_in_)) * 18 * value_dir_;
       const int v0 = dl_->VtxBuffer.Size;
-      Text(a_.body_bold, 23, vr + slide, yy + 11, kInk, v, 1);
+      TextMid(a_.body_bold, 23, vr + slide, cy, kInk, v, 1);
       Fade(v0, 0.25f + 0.75f * Smooth(value_in_));
       const float vl = vr - TextWidth(a_.body_bold, 23, v) - 18;
       const float nudge_l = value_dir_ < 0 ? (1 - Smooth(value_in_)) * 6 : 0;
@@ -743,7 +793,7 @@ void Hub::DrawSettings() {
       dl_->AddTriangleFilled(P(vr + 14 + nudge_r, cy - 7), P(vr + 14 + nudge_r, cy + 7), P(vr + 23 + nudge_r, cy),
                              Black(0.75f * over));
     } else {
-      Text(a_.body, 23, x + w - 24, yy + 11, Mix(White(0.6f), kInk, over), v, 1);
+      TextMid(a_.body, 23, x + w - 24, cy, Mix(White(0.6f), kInk, over), v, 1);
     }
   });
   // the focused setting, explained
@@ -759,7 +809,7 @@ void Hub::DrawSettings() {
       const float pop = c ? 1 + 0.6f * (1 - Smooth(value_in_)) : 1;
       if (c) dl_->AddCircleFilled(P(px + 8, py + 14), 6 * pop * s_, kAccent, 20);
       else dl_->AddCircle(P(px + 8, py + 14), 5.5f * s_, White(0.3f), 20, 1.5f * s_);
-      Text(c ? a_.body_bold : a_.body, 22, px + 30, py, c ? kText : White(0.45f), r.labels[size_t(k)]);
+      TextMid(c ? a_.body_bold : a_.body, 22, px + 30, py + 14, c ? kText : White(0.45f), r.labels[size_t(k)]);
       py += 42;
     }
   });
@@ -819,7 +869,8 @@ void Hub::DrawSaves() {
 }
 
 void Hub::DrawAbout() {
-  PageTitle("ABOUT", "Dragon Ball Z Budokai 3 for PlayStation 5" + (version_.empty() ? "" : "  \xC2\xB7  " + version_));
+  PageTitle("ABOUT", "Dragon Ball Z Budokai 3 for PlayStation 5" +
+                        (version_.empty() ? "" : "  \xC2\xB7  Version " + version_));
   struct Credit {
     const char* who;
     const char* what;

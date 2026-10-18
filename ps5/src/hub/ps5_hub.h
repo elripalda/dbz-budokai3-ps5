@@ -20,5 +20,7 @@ const Assets& Fonts();
 // Shows the hub; `launch` runs (on the UI thread) on START GAME.
 void Show(rex::ui::ImGuiDrawer* drawer, rex::ui::ImmediateDrawer* immediate, const Paths& paths,
           std::function<void()> launch);
+// The port's version ("0.0.5 Beta"), as the hub shows it.
+const char* Version();
 }  // namespace budokai3::hub
 #endif

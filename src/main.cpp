@@ -663,7 +663,7 @@ public:
         auto exe_dir = rex::filesystem::GetExecutableFolder();
         REXLOG_INFO("OnConfigurePaths - exe_dir: {}", exe_dir.string());
 #if defined(__PROSPERO__)
-        REXLOG_INFO("==== DBZ Budokai 3 PS5 port {} ====", BUDOKAI3_VERSION);
+        REXLOG_INFO("==== DBZ Budokai 3 PS5 port {} ====", budokai3::hub::Version());
         budokai3::InstallCrashReporter(exe_dir / "crashes");
         budokai3::PrepareSettingsFile(paths.config_path);
         config_path_ = paths.config_path;
