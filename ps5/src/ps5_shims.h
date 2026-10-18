@@ -6,6 +6,10 @@
 // is known to have (a missing one traps the first time it's called), so they
 // are renamed here, declarations and calls alike, to stubs that say "can't"
 // (ps5_shims.cpp). The game itself never needs them.
+//
+// A few plain libc functions the earlier ports never imported (inet_ntop,
+// inet_pton, atoll, hypotf, islower, isupper) are built into the app instead
+// (ps5_shims.cpp), so the console's copies are never asked for.
 #pragma once
 
 #if defined(__PROSPERO__)
@@ -21,4 +25,5 @@
 #define pclose budokai3_ps5_no_pclose
 #define getifaddrs budokai3_ps5_no_getifaddrs
 #define freeifaddrs budokai3_ps5_no_freeifaddrs
+#define environ budokai3_ps5_environ
 #endif

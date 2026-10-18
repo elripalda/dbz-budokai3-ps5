@@ -158,6 +158,7 @@ if(REX_PS5)
     list(APPEND DBZ3_SOURCES
         ps5/src/budokai3_ps5.cpp
         ps5/src/ps5_shims.cpp
+        ps5/src/ps5_libc_own.cpp
         ps5/src/crash_report_posix.cpp
         ps5/src/ps5/procparam_room.cpp
         ps5/src/ps5/sound.cpp
@@ -165,6 +166,9 @@ if(REX_PS5)
         ps5/src/hub/ps5_hub.cpp
         ps5/src/hub/hub_sfx.cpp
         ps5/src/hub/hub_install.cpp)
+    # (its functions stay hidden: the PS5 target otherwise sets visibility from DLL storage class)
+    set_source_files_properties(ps5/src/ps5_libc_own.cpp PROPERTIES
+        COMPILE_OPTIONS "-fno-visibility-from-dllstorageclass")
     set_source_files_properties(ps5/src/hub/ps5_hub.cpp PROPERTIES
         COMPILE_DEFINITIONS "BUDOKAI3_FONTS_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/ps5/fonts\""
         OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ps5/fonts/oswald-latin-700-normal.ttf")

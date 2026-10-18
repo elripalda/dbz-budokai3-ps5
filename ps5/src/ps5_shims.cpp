@@ -41,5 +41,7 @@ int getifaddrs(struct ifaddrs** out) {
 }
 void freeifaddrs(struct ifaddrs*) {}
 
+char** environ = nullptr;
+
 }  // extern "C"
 #endif
