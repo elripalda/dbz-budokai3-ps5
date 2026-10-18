@@ -14,6 +14,8 @@
 #include <natupnp.h>
 #include <oleauto.h>
 #else
+#include <sys/socket.h>  // [ps5 port] AF_INET (FreeBSD: not through arpa/inet.h)
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #endif
 
