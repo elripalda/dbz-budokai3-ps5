@@ -119,3 +119,4 @@ docs/13_assets_externos/
 # Derivado del codigo generado (lo crea CMake con tools/gen_escenarios_sel.py).
 src/escenarios_sel_gen.inc
 src/escenarios_sel_gen_eu.inc
+ps5/art/local/
