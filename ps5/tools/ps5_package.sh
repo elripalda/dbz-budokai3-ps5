@@ -88,6 +88,7 @@ cp "$tri/runtime/libc.prx" "$app/sce_module/libc.prx"
 # Where the game's files go (the disc's DBZ3 folder), and the mods folder.
 mkdir -p "$app/Assets" "$app/mods"
 cp "$here/assets-readme.txt" "$app/Assets/README.txt"
+cp "$here/how-to-install.txt" "$app/HOW TO INSTALL.txt"
 # The in-game screens' fonts (Inter and Oswald, SIL Open Font License).
 mkdir -p "$app/fonts"
 cp "$port"/fonts/*.ttf "$port"/fonts/OFL-*.txt "$app/fonts/"

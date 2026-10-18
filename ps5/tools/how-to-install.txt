@@ -1,0 +1,9 @@
+DRAGON BALL Z BUDOKAI 3 - PS5
+
+1. Copy this PPSA93003 folder to /data/homebrew/ on your PS5, so you have
+   /data/homebrew/PPSA93003/eboot.bin (not a folder inside another folder).
+2. Copy the DBZ3 folder from your own Budokai HD Collection disc into
+   /data/homebrew/PPSA93003/Assets/
+3. Run the ShadowMountPlus payload again so it picks up the new app.
+
+No game files are included.
