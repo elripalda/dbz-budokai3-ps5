@@ -10,6 +10,10 @@
 </p>
 
 <p align="center">
+  <a href="https://recompstore.com/game/PPSA93004"><img alt="Get it on RecompStore" src="https://recompstore.com/assets/press/badge-dark.svg" height="56"></a>
+</p>
+
+<p align="center">
   <b>Dragon Ball Z: Budokai 3</b> running natively on a jailbroken PS5,<br>
   a port of <a href="https://github.com/novapowers0/DBZ-Budokai-3-HD-Collection"><b>NovaPowers' DBZ Budokai 3 HD Collection</b></a>.
 </p>
@@ -56,7 +60,7 @@ NovaPowers' fixes and additions to the game come with it. See [his README](READM
 
 You need a jailbroken PS5 that runs homebrew apps from `/data/homebrew/`, with a homebrew launcher that lists them.
 
-**With [Recomp Store](https://recompstore.com):** install Dragon Ball Z Budokai 3 and give it your disc image. It puts the app in `/data/homebrew/PPSA93004/` and the game in its `Assets/` folder. Start the app and press **START GAME**.
+**With [RecompStore](https://recompstore.com):** install Dragon Ball Z Budokai 3 and give it your disc image. It puts the app in `/data/homebrew/PPSA93004/` and the game in its `Assets/` folder. Start the app and press **START GAME**.
 
 **By hand** (an FTP client):
 
@@ -97,7 +101,7 @@ Put your own songs (MP3, WAV, FLAC or OGG) in `/data/homebrew/PPSA93004/hub/musi
 
 ## Updating
 
-Copy a newer `PPSA93004` folder over the old one, or update from Recomp Store. The game (`Assets`), your saves and trophies (`user_data`) and your settings are kept.
+Copy a newer `PPSA93004` folder over the old one, or update from RecompStore. The game (`Assets`), your saves and trophies (`user_data`) and your settings are kept.
 
 ## Known issues
 
